@@ -5,7 +5,6 @@ import SVGPlus from '@/assets/images/plus.svg'
 import SVGReset from '@/assets/images/reset.svg'
 import NavBar from '@/components/NavBar/NavBar'
 import { useCreateNewsMutation } from '@/lib/redux/api/News/NewsApi'
-import { ICreateNews } from '@/lib/redux/api/News/types'
 
 import { useGetSitiesQuery } from '@/lib/redux/api/Sities/SitiesApi'
 import { myToast } from '@/ui/toast'
