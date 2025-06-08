@@ -60,7 +60,7 @@ const Users = () => {
 		<>
 			<NavBar active='users' />
 			<FilterAll names={['Город']} sities={cities} onApply={handleApply} onClear={handleClear} doubleButtonLink='#' doubleButtonName='Новые заявки' />
-			<Table list={users} deleteFunc={deleteUserFunc} />
+			{/* <Table list={users} deleteFunc={deleteUserFunc} /> */}
 		</>
 	)
 }
