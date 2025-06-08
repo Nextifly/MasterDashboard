@@ -35,6 +35,7 @@ const Static = () => {
 	// Настройки диаграммы
 	const options: ChartOptions<'pie'> = {
 		responsive: true,
+		maintainAspectRatio: false,
 		plugins: {
 			tooltip: {
 				callbacks: {
@@ -78,7 +79,9 @@ const Static = () => {
 						<div className='size-[15px] rounded-[15px] bg-[#777776] mt-1' />
 						<p className='font-bold text-[20px]'>Открытых заявок: 36 (30%)</p>
 					</div>
-					<Pie data={pieChartData} options={options} height={550} width={550} />
+					<div className='max-w-[350px]'>
+						<Pie data={pieChartData} options={options} style={{ height: 350}} />
+					</div>
 				</div>
 				<section className='w-[70%]'>
 					<div className='flex justify-between items-start mb-8'>

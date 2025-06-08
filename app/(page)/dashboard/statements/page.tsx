@@ -49,7 +49,7 @@ const Statements = () => {
 				onApply={handleApply}
 				onClear={handleClear}
 			/>
-			<Table
+			{/* <Table
 				list={[
 					{ name: '№', list: ['1'], filter: false },
 					{ name: 'Город', list: ['Москва'], filter: true },
@@ -61,7 +61,7 @@ const Statements = () => {
 					},
 					{ name: 'Статус', list: ['поиск мастера'], filter: true },
 				]}
-			/>
+			/> */}
 		</>
 	)
 }

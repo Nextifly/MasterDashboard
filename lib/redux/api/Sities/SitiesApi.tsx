@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { ICreateSity, IGetSity } from './types'
+import { ISityResponse, IGetSity, IHiddenSity, ISityRequest } from './types'
 
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
@@ -13,14 +13,35 @@ export const SitiesApi = createApi({
 		getSities: builder.query<IGetSity[],void>({
 			query: () => '/cities'
 		}),
-		createSities: builder.mutation<void,ICreateSity>({
-			query: (city) => ({
+		createSities: builder.mutation<ISityRequest,ISityResponse>({
+			query: ({name, token}) => ({
 				url: '/cities',
-				method: 'post',
-				body: city
+				method: 'POST',
+				body: {name},
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
+			})
+		}),
+		hiddenSities: builder.mutation<void,IHiddenSity>({
+			query: ({id, token}) => ({
+				url: `/cities/${id}/hidden`,
+				method: 'PATCH',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
+			})
+		}),
+		visibleSities: builder.mutation<void,IHiddenSity>({
+			query: ({id, token}) => ({
+				url: `/cities/${id}/visible`,
+				method: 'PATCH',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
 			})
 		}),
 	})
 })
 
-export const {useGetSitiesQuery, useCreateSitiesMutation} = SitiesApi;
+export const {useGetSitiesQuery, useCreateSitiesMutation, useHiddenSitiesMutation, useVisibleSitiesMutation} = SitiesApi;

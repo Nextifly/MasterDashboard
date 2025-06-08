@@ -4,7 +4,16 @@ export interface IGetSity {
 	id: string;
 }
 
-export interface ICreateSity {
-	name: string;
-	visible: boolean
+export interface ISityResponse {
+	name: string
+	token: string;
+}
+
+export interface ISityRequest {
+	message?: string
+}
+
+export interface IHiddenSity {
+	id: string;
+	token: string;
 }

@@ -13,7 +13,7 @@ const NavBar = ({ active }: { active: string }) => {
 		<section className='w-full h-15 bg-[#9e9e9e] flex justify-between px-30 items-center gap-8'>
 			<Link
 				href='/dashboard/statements'
-				className={`flex justify-around items-center gap-3 px-1 pl-3 rounded-[20px] h-[42px] ${
+				className={`flex justify-around items-center gap-3 px-3 rounded-[20px] h-[42px] ${
 					active === 'statements' && 'bg-white'
 				} py-1 cursor-pointer`}
 			>
@@ -24,13 +24,6 @@ const NavBar = ({ active }: { active: string }) => {
 				>
 					Заявки
 				</h2>
-				<p
-					className={`size-[30px] rounded-[30px] flex justify-center items-center ${
-						active === 'statements' ? 'bg-[#D9D9D9]' : 'bg-white'
-					} font-normal text-[20px] leading-0 pb-1`}
-				>
-					3
-				</p>
 			</Link>
 			<Link
 				href='/dashboard/users'
@@ -59,13 +52,6 @@ const NavBar = ({ active }: { active: string }) => {
 				>
 					Мастера
 				</h2>
-				<p
-					className={`size-[30px] rounded-[30px] flex justify-center items-center text-center ${
-						active === 'masters' ? 'bg-[#D9D9D9]' : 'bg-white'
-					} font-normal text-[20px] leading-0 pb-1`}
-				>
-					3
-				</p>
 			</Link>
 			<Link
 				href='/dashboard/news'
@@ -95,13 +81,13 @@ const NavBar = ({ active }: { active: string }) => {
 					} bg-white h-auto border-r-1 border-l-1 border-b-1 border-[#9e9e9e] rounded-b-[20px]`}
 				>
 					<Link
-						href='#'
+						href='/dashboard/statements/sity'
 						className='text-black font-normal text-[20px] mb-2 pr-5'
 					>
 						Города
 					</Link>
 					<Link
-						href='#'
+						href='/dashboard/statements/category'
 						className='text-black font-normal text-[20px] mb-2 pr-5'
 					>
 						Категории

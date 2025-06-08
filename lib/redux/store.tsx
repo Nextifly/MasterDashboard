@@ -2,17 +2,23 @@ import { configureStore } from '@reduxjs/toolkit'
 import { AuthApi } from './api/Auth/AuthApi'
 import { SitiesApi } from './api/Sities/SitiesApi'
 import { NewsApi } from './api/News/NewsApi'
+import { CategoriesApi } from './api/Categories/CategoriesApi'
+import { UsersApi } from './api/Users/UsersApi'
 
 export const store = configureStore({
 	reducer: {
 		[AuthApi.reducerPath]: AuthApi.reducer,
 		[SitiesApi.reducerPath]: SitiesApi.reducer,
-		[NewsApi.reducerPath]: NewsApi.reducer
+		[NewsApi.reducerPath]: NewsApi.reducer,
+		[CategoriesApi.reducerPath]: CategoriesApi.reducer,
+		[UsersApi.reducerPath]: UsersApi.reducer
 	},
 	middleware: getDefaultMiddleware => 
 		getDefaultMiddleware().concat(
 			AuthApi.middleware,
 			SitiesApi.middleware,
-			NewsApi.middleware
+			NewsApi.middleware,
+			CategoriesApi.middleware,
+			UsersApi.middleware
 		)
 })
