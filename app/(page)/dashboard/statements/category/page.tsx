@@ -53,7 +53,7 @@ const StatementsCategory = () => {
 					arr.push(subcategory.name)
 					arr.push(category.name)
 					arr.push(subcategory.id)
-					arr.push((category.visible).toString())
+					arr.push((subcategory.visible).toString())
 					arr.push(category.id)
 					newList.push(arr)
 				})

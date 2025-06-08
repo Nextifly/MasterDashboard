@@ -33,7 +33,7 @@ export const CategoriesApi = createApi({
 		}),
 		hiddenCategory: builder.mutation<void, IHiddenCategory>({
 			query: ({id, serviceId, token }) => ({
-				url: `/service-categories/${serviceId}/hidden`,
+				url: `/service-categories/${serviceId}/subservices/${id}/hidden`,
 				method: 'PATCH',
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -42,7 +42,7 @@ export const CategoriesApi = createApi({
 		}),
 		visibleCategory: builder.mutation<void, IHiddenCategory>({
 			query: ({id, serviceId, token }) => ({
-				url: `/service-categories/${serviceId}/visible`,
+				url: `/service-categories/${serviceId}/subservices/${id}/visible`,
 				method: 'PATCH',
 				headers: {
 					Authorization: `Bearer ${token}`,
