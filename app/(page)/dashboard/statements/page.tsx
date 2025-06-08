@@ -1,8 +1,6 @@
 'use client'
 
 import NavBar from '@/components/NavBar/NavBar'
-import FilterAll from '@/components/FilterAll/FilterAll'
-import Table from '@/components/Table/Table'
 import { useGetSitiesQuery } from '@/lib/redux/api/Sities/SitiesApi'
 import { useEffect, useState } from 'react'
 
@@ -33,22 +31,6 @@ const Statements = () => {
 	return (
 		<>
 			<NavBar active='statements' />
-			<FilterAll
-				names={['Город', 'Категория', 'Статус']}
-				sities={cities}
-				categories={[
-					'Бытовая техника - Ремонт - Стиральные машины',
-					'Электрика - Установка - Монтаж розеток',
-				]}
-				status={[
-					'поиск мастера',
-					'взята в работу',
-					'отложенный ремонт',
-					'завершена',
-				]}
-				onApply={handleApply}
-				onClear={handleClear}
-			/>
 			{/* <Table
 				list={[
 					{ name: '№', list: ['1'], filter: false },

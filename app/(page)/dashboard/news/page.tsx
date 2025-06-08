@@ -1,8 +1,8 @@
 'use client'
 
-import FilterAll from '@/components/FilterAll/FilterAll'
 import NavBar from '@/components/NavBar/NavBar'
 import Table, { IList } from '@/components/Table/Table'
+import SVGArrow from '@/assets/images/arrow_black.svg'
 import {
 	useDeleteNewsMutation,
 	useGetNewsQuery,
@@ -13,6 +13,8 @@ import { useGetSitiesQuery } from '@/lib/redux/api/Sities/SitiesApi'
 import { useAccessToken } from '@/lib/store/store'
 import { myToast } from '@/ui/toast'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 interface IData {
 	sity?: string
@@ -29,6 +31,8 @@ const News = () => {
 	const { accessToken } = useAccessToken()
 
 	const [cities, setCities] = useState<string[]>([])
+	const [activeCity, setActiveCity] = useState<string>('Город')
+	const [select, setSelect] = useState<boolean>(false)
 	const [news, setNews] = useState<IList>({
 		header: [
 			{ name: '№' },
@@ -41,19 +45,22 @@ const News = () => {
 	})
 	const [filterNews, setFilterNews] = useState<IList>(news)
 
-	const handleApply = (data: IData) => {
-		if (!data.sity) return
+	const handleApply = () => {
+		if (activeCity == 'Город') return
 		let list: string[][] = news.list
+		console.log(list)
 		let updateList = list.map(value => {
-			if (value.includes(data.sity!)) return
-			return value
+			if (value[2] == activeCity) return value
 		})
-		if (updateList === undefined) {updateList = []}
-		setFilterNews({header: news.header, list: updateList as string[][]})
+		if (updateList === undefined) {
+			updateList = []
+		}
+		setFilterNews({ header: news.header, list: updateList as string[][] })
 	}
 
 	const handleClear = () => {
 		setFilterNews(news)
+		setActiveCity('Город')
 	}
 
 	useEffect(() => {
@@ -82,7 +89,6 @@ const News = () => {
 				arr.push(value.id)
 				updatedNews.push(arr)
 			})
-			console.log(updatedNews)
 			setNews({ header: news.header, list: updatedNews })
 			setFilterNews({ header: news.header, list: updatedNews })
 		}
@@ -127,15 +133,35 @@ const News = () => {
 	return (
 		<section>
 			<NavBar active='news' />
-			<FilterAll
-				names={['Город']}
-				sities={cities}
-				onApply={handleApply}
-				onClear={handleClear}
-				doubleButtonName='Добавить новость'
-				doubleButtonLink='/dashboard/news/add'
+			<section className='flex justify-between px-30 my-6'>
+				<div className='flex justify-start gap-4 items-center'>
+					<h2 className='font-medium text-[20px]'>Фильтр:</h2>
+					<div className='relative'>
+						<div className='w-[175px] px-3 h-8 flex justify-between items-center gap-3 bg-white border-1 border-[#9E9E9E] rounded-[20px] cursor-pointer' onClick={() => setSelect(!select)}>
+						<h2>{activeCity}</h2>
+						<Image src={SVGArrow} alt='' className={`${select && 'rotate-180'}`} />
+					</div>
+					<div className={`absolute w-full h-auto px-5 py-3 top-10 left-0 bg-white z-10 border-1 border-[#9E9E9E] rounded-[20px] ${!select && 'hidden'} w-[250px]`}>
+						{
+							cities.map((city) => (
+								<h2 className='cursor-pointer' key={city} onClick={() => {
+									setSelect(false)
+									setActiveCity(city)
+								}}>{city}</h2>
+							))
+						}
+					</div>
+					</div>
+					<button onClick={handleApply} className='w-[109px] h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer'>Применить</button>
+					<button onClick={handleClear} className='w-[109px] h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer'>Очистить</button>
+				</div>
+				<Link className='w-auto h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer flex items-center justify-center px-3' href="/dashboard/news/add">Добавить новости</Link>
+			</section>
+			<Table
+				onHidden={handleHidden}
+				list={filterNews}
+				deleteFunc={deleteNewsFunc}
 			/>
-			<Table onHidden={handleHidden} list={filterNews} deleteFunc={deleteNewsFunc} />
 		</section>
 	)
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import FilterAll from '@/components/FilterAll/FilterAll'
 import NavBar from '@/components/NavBar/NavBar'
 import Table, { IList } from '@/components/Table/Table'
 import { useGetSitiesQuery } from '@/lib/redux/api/Sities/SitiesApi'
@@ -59,7 +58,6 @@ const Users = () => {
 	return (
 		<>
 			<NavBar active='users' />
-			<FilterAll names={['Город']} sities={cities} onApply={handleApply} onClear={handleClear} doubleButtonLink='#' doubleButtonName='Новые заявки' />
 			{/* <Table list={users} deleteFunc={deleteUserFunc} /> */}
 		</>
 	)
