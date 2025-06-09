@@ -20,10 +20,10 @@ export interface IList {
 interface ITable {
 	list: IList
 	deleteFunc: (id: string) => void
-	onHidden: (id: string, visible: string) => void
+	onClick: (id: string) => void
 }
 
-const Table = ({ list: initialList, deleteFunc, onHidden }: ITable) => {
+const Table = ({ list: initialList, deleteFunc, onClick }: ITable) => {
 	const [sortConfig, setSortConfig] = useState<{
 		column: string | null
 		direction: 'asc' | 'desc'
@@ -57,9 +57,7 @@ const Table = ({ list: initialList, deleteFunc, onHidden }: ITable) => {
 				// Для числовых колонок (например, №)
 				if (
 					columnName === '№' ||
-					columnName === 'Телефон' ||
-					columnName === 'Оформления заявок' ||
-					columnName === 'ID'
+					columnName === 'Оформлено заявок'
 				) {
 					const numA = parseInt(a[columnIndex])
 					const numB = parseInt(b[columnIndex])
@@ -123,11 +121,10 @@ const Table = ({ list: initialList, deleteFunc, onHidden }: ITable) => {
 							<tr className='h-15 text-center' key={rowIndex}>
 								{row.map(
 									(cell, cellIndex) =>
-										cellIndex !== 0 &&
 										(cellIndex !== row.length - 1 ? (
 											<td
 												className={`font-medium text-[15px] ${
-													cellIndex === 1 && 'text-start pl-2'
+													cellIndex === 0 && 'text-start pl-2'
 												}`}
 												key={`${rowIndex}-${cellIndex}`}
 											>
@@ -140,10 +137,10 @@ const Table = ({ list: initialList, deleteFunc, onHidden }: ITable) => {
 											>
 												<div className='flex justify-around items-center'>
 													<Image
-														src={row[0] === 'false' ? ImageEye : SVGEye}
+														src={SVGEye}
 														alt='View'
 														className='cursor-pointer'
-														onClick={() => onHidden(cell, row[0])}
+														onClick={() => onClick(cell)}
 													/>
 													<Image
 														src={SVGDelete}

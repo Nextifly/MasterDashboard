@@ -48,9 +48,8 @@ const News = () => {
 	const handleApply = () => {
 		if (activeCity == 'Город') return
 		let list: string[][] = news.list
-		console.log(list)
 		let updateList = list.map(value => {
-			if (value[2] == activeCity) return value
+			if (value[1] == activeCity) return value
 		})
 		if (updateList === undefined) {
 			updateList = []
@@ -81,7 +80,6 @@ const News = () => {
 				const createData = `${day}.${month}.${year}`
 
 				const arr = []
-				arr.push(value.visible.toString())
 				arr.push(`${index + 1}`)
 				arr.push(value.cityDto.name)
 				arr.push(createData)
@@ -106,28 +104,8 @@ const News = () => {
 		}
 	}
 
-	const handleHidden = async (id: string, visible: string) => {
-		if (visible === 'true') {
-			try {
-				await hiddenNews({ id, token: accessToken! })
-				myToast({ message: 'Успешно!', type: 'success' })
-				setTimeout(() => {
-					window.location.reload()
-				}, 2000)
-			} catch (e) {
-				myToast({ message: 'Ошибка!', type: 'error' })
-			}
-		} else {
-			try {
-				await visibleNews({ id, token: accessToken! })
-				myToast({ message: 'Успешно!', type: 'success' })
-				setTimeout(() => {
-					window.location.reload()
-				}, 2000)
-			} catch (e) {
-				myToast({ message: 'Ошибка!', type: 'error' })
-			}
-		}
+	const handleClick = async (id: string) => {
+		
 	}
 
 	return (
@@ -158,7 +136,7 @@ const News = () => {
 				<Link className='w-auto h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer flex items-center justify-center px-3' href="/dashboard/news/add">Добавить новости</Link>
 			</section>
 			<Table
-				onHidden={handleHidden}
+				onClick={handleClick}
 				list={filterNews}
 				deleteFunc={deleteNewsFunc}
 			/>

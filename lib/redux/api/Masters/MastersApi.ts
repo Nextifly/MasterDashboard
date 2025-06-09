@@ -1,16 +1,16 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IDeleteUser, IUsersRequest } from './types'
+import { IDeleteMaster, IMastersRequest } from './types'
 
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
 
-export const UsersApi = createApi({
-	reducerPath: "users",
+export const MastersApi = createApi({
+	reducerPath: "masters",
 	baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
 	endpoints: builder => ({
-		getUsers: builder.query<IUsersRequest,string>({
+		getMasters: builder.query<IMastersRequest,string>({
 			query: (token) => ({
 				url: 'https://109.73.198.81:9093/api/admin/client-profiles',
 				headers: {
@@ -18,7 +18,7 @@ export const UsersApi = createApi({
 				}
 			})
 		}),
-		deleteUsers: builder.mutation<void,IDeleteUser>({
+		deleteMasters: builder.mutation<void,IDeleteMaster>({
 			query: ({id, token}) => ({
 				url: "/admin/client-profiles/" + id,
 				method: 'DELETE',
@@ -30,4 +30,4 @@ export const UsersApi = createApi({
 	})
 })
 
-export const {useGetUsersQuery, useDeleteUsersMutation} = UsersApi;
+export const {useGetMastersQuery, useDeleteMastersMutation} = MastersApi;

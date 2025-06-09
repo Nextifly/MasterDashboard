@@ -1,27 +1,26 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IDeleteUser, IUsersRequest } from './types'
+import { IOrderRequest, IOrderResponse, IOrdersRequest } from './types'
 
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
 
-export const UsersApi = createApi({
-	reducerPath: "users",
+export const OrdersApi = createApi({
+	reducerPath: "orders",
 	baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
 	endpoints: builder => ({
-		getUsers: builder.query<IUsersRequest,string>({
+		getOrders: builder.query<IOrdersRequest,string>({
 			query: (token) => ({
-				url: 'https://109.73.198.81:9093/api/admin/client-profiles',
+				url: '/admin/orders',
 				headers: {
 					Authorization: `Bearer ${token}`,
 				}
 			})
 		}),
-		deleteUsers: builder.mutation<void,IDeleteUser>({
+		getOrder: builder.query<IOrderRequest,IOrderResponse>({
 			query: ({id, token}) => ({
-				url: "/admin/client-profiles/" + id,
-				method: 'DELETE',
+				url: '/admin/orders/'+id,
 				headers: {
 					Authorization: `Bearer ${token}`,
 				}
@@ -30,4 +29,4 @@ export const UsersApi = createApi({
 	})
 })
 
-export const {useGetUsersQuery, useDeleteUsersMutation} = UsersApi;
+export const {useGetOrdersQuery, useLazyGetOrderQuery} = OrdersApi;

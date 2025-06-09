@@ -1,13 +1,13 @@
-export interface IUsersRequest {
-	content: IUser[]
+export interface IMastersRequest {
+	content: IMaster[]
 }
 
-export interface IDeleteUser {
+export interface IDeleteMaster {
 	id: string;
 	token: string;
 }
 
-interface IUser {
+interface IMaster {
 	id: string;
 	firstName: string;
 	lastName: string;
