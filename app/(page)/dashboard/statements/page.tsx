@@ -138,12 +138,10 @@ const Statements = () => {
 
 	const deleteFunc = (id: string) => {}
 
-	const handleClick = (id: string) => {
+	const handleClick = async (id: string) => {
 		setModal(true)
-		getOrder({ id, token: accessToken! })
-		if (orderData) {
-			setOrder(orderData)
-		}
+		await getOrder({ id, token: accessToken! })
+		setOrder(orderData)
 	}
 
 	function formatDateTime(isoString: Date) {

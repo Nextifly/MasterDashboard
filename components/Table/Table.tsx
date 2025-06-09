@@ -5,7 +5,7 @@ import SVGDelete from '@/assets/images/delete.svg'
 import SVGEye from '@/assets/images/eye2.svg'
 import SVGFilter from '@/assets/images/filter.svg'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 
 interface IHeader {
 	name: string
@@ -23,7 +23,7 @@ interface ITable {
 	onClick: (id: string) => void
 }
 
-const Table = ({ list: initialList, deleteFunc, onClick }: ITable) => {
+const Table = memo(({ list: initialList, deleteFunc, onClick }: ITable) => {
 	const [sortConfig, setSortConfig] = useState<{
 		column: string | null
 		direction: 'asc' | 'desc'
@@ -158,6 +158,6 @@ const Table = ({ list: initialList, deleteFunc, onClick }: ITable) => {
 			</table>
 		</section>
 	)
-}
+})
 
 export default Table
