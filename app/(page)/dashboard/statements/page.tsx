@@ -15,7 +15,7 @@ import {
 } from '@/lib/redux/api/Orders/OrdersApi'
 import { IOrderRequest } from '@/lib/redux/api/Orders/types'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const Statements = () => {
 	const { accessToken } = useAccessToken()
@@ -44,6 +44,7 @@ const Statements = () => {
 	const [filterOrders, setFilterOrders] = useState<IList>(orders)
 	const [getOrder, { data: orderData }] = useLazyGetOrderQuery()
 	const [order, setOrder] = useState<IOrderRequest | undefined>()
+	const [isLoading, setIsLoading] = useState(false)
 
 	const handleApply = () => {
 		// Начинаем с исходного списка
@@ -138,11 +139,48 @@ const Statements = () => {
 
 	const deleteFunc = (id: string) => {}
 
-	const handleClick = async (id: string) => {
-		setModal(true)
-		await getOrder({ id, token: accessToken! })
-		setOrder(orderData)
-	}
+	// const handleClick = async (id: string) => {
+	// 	setModal(true)
+	// 	await getOrder({ id, token: accessToken! })
+	// 	setOrder(orderData)
+	// }
+
+	const handleClick = useCallback(
+		async (id: string) => {
+			try {
+				// 1. Начало операции - сбрасываем состояния
+				setIsLoading(true)
+				setOrder(undefined)
+
+				// 2. Синхронные обновления
+				setModal(true)
+				console.log('Modal state set to true')
+
+				// 3. Асинхронная операция
+				await getOrder({ id, token: accessToken! }).unwrap()
+
+				// 4. После получения данных
+				if (orderData) {
+					setOrder(orderData)
+					console.log('Order data updated:', orderData)
+				}
+			} catch (error) {
+				console.error('Error fetching order:', error)
+			} finally {
+				// 5. Финализация
+				setIsLoading(false)
+			}
+		},
+		[accessToken, getOrder]
+	)
+
+	// Дополнительный эффект для обработки данных
+	useEffect(() => {
+		if (orderData) {
+			setOrder(orderData)
+			console.log('Order data from effect:', orderData)
+		}
+	}, [orderData])
 
 	function formatDateTime(isoString: Date) {
 		const date = new Date(isoString)
@@ -246,7 +284,11 @@ const Statements = () => {
 							className='w-[175px] px-3 h-8 flex justify-between items-center gap-3 bg-white border-1 border-[#9E9E9E] rounded-[20px] cursor-pointer'
 							onClick={() => setSelect(select === 'status' ? '' : 'status')}
 						>
-							<h2>{activeStatus.length >= 12 ? activeStatus.slice(0,10)+'...' : activeStatus}</h2>
+							<h2>
+								{activeStatus.length >= 12
+									? activeStatus.slice(0, 10) + '...'
+									: activeStatus}
+							</h2>
 							<Image
 								src={SVGArrow}
 								alt=''
@@ -324,7 +366,7 @@ const Statements = () => {
 				onClick={handleClick}
 				deleteFunc={deleteFunc}
 			/>
-			{order !== undefined && (
+			{order !== undefined && !isLoading ? (
 				<section
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] z-10 flex justify-center items-center ${
 						!modal && 'hidden'
@@ -336,7 +378,7 @@ const Statements = () => {
 							alt='...'
 							className='absolute top-3 right-3 cursor-pointer'
 							onClick={() => {
-								window.location.reload()
+								setModal(false)
 							}}
 						/>
 						<div className='flex justify-between items-start gap-10'>
@@ -356,13 +398,12 @@ const Statements = () => {
 								<p className='text-[20px]'>
 									Статус: {updateStatus(order.status)}
 								</p>
-								{
-									order.postponeDto && (
+								{order.postponeDto && (
 									<p className='text-[20px]'>
-										Назначенная дата: {formatDateTime(order.postponeDto.newAppointmentDate)}
+										Назначенная дата:{' '}
+										{formatDateTime(order.postponeDto.newAppointmentDate)}
 									</p>
-									)
-								}
+								)}
 							</div>
 							<div>
 								<h2 className='font-bold text-[20px] mb-3'>Данные заказчика</h2>
@@ -380,14 +421,14 @@ const Statements = () => {
 								</p>
 							</div>
 						</div>
-						{
-							order.postponeDto && (
-								<div className='mt-5'>
-									<h2 className='text-[20px] font-bold'>Комментарий мастера:</h2>
-									<p className='text-[20px] font-normal'>{order.postponeDto.reason}</p>
-								</div>
-							)
-						}
+						{order.postponeDto && (
+							<div className='mt-5'>
+								<h2 className='text-[20px] font-bold'>Комментарий мастера:</h2>
+								<p className='text-[20px] font-normal'>
+									{order.postponeDto.reason}
+								</p>
+							</div>
+						)}
 						{order.masterInfoDto && (
 							<div className='mt-5'>
 								<h2 className='font-bold text-[20px] mb-3'>Данные мастера</h2>
@@ -435,6 +476,12 @@ const Statements = () => {
 						)}
 					</div>
 				</section>
+			) : (
+				<section
+					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] z-10 flex justify-center items-center ${
+						!modal && 'hidden'
+					}`}
+				/>
 			)}
 		</>
 	)
