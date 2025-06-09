@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IDeleteUser, IUsersRequest } from './types'
+import { IDeleteUser, IUser, IUserResponse, IUsersRequest } from './types'
 
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
@@ -18,6 +18,14 @@ export const UsersApi = createApi({
 				}
 			})
 		}),
+		getUser: builder.query<IUser,IUserResponse>({
+			query: ({id, token}) => ({
+				url: 'https://109.73.198.81:9093/api/admin/client-profiles/'+id,
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
+			})
+		}),
 		deleteUsers: builder.mutation<void,IDeleteUser>({
 			query: ({id, token}) => ({
 				url: "/admin/client-profiles/" + id,
@@ -30,4 +38,4 @@ export const UsersApi = createApi({
 	})
 })
 
-export const {useGetUsersQuery, useDeleteUsersMutation} = UsersApi;
+export const {useGetUsersQuery, useDeleteUsersMutation, useLazyGetUserQuery} = UsersApi;

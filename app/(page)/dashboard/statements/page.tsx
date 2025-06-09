@@ -139,12 +139,6 @@ const Statements = () => {
 
 	const deleteFunc = (id: string) => {}
 
-	// const handleClick = async (id: string) => {
-	// 	setModal(true)
-	// 	await getOrder({ id, token: accessToken! })
-	// 	setOrder(orderData)
-	// }
-
 	const handleClick = useCallback(
 		async (id: string) => {
 			try {
@@ -162,7 +156,6 @@ const Statements = () => {
 				// 4. После получения данных
 				if (orderData) {
 					setOrder(orderData)
-					console.log('Order data updated:', orderData)
 				}
 			} catch (error) {
 				console.error('Error fetching order:', error)
@@ -178,7 +171,6 @@ const Statements = () => {
 	useEffect(() => {
 		if (orderData) {
 			setOrder(orderData)
-			console.log('Order data from effect:', orderData)
 		}
 	}, [orderData])
 
@@ -195,7 +187,6 @@ const Statements = () => {
 	}
 
 	function updateStatus(status: string) {
-		console.log(status)
 		return status === 'COMPLETED'
 			? 'Завершена'
 			: status === 'CANCELLED'
@@ -385,8 +376,11 @@ const Statements = () => {
 							<div>
 								<h2 className='font-bold text-[20px] mb-3'>
 									№
-									{order.id.slice(0, 3) +
-										order.id.slice(order.id.length - 3, order.id.length)}
+									{
+										order.id.slice(0, 3) +
+										'-' +
+										order.id.slice(order.id.length - 3, order.id.length)
+									}
 								</h2>
 								<p className='text-[20px]'>Город: {order.cityDto.name}</p>
 								<p className='text-[20px]'>
@@ -481,7 +475,18 @@ const Statements = () => {
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] z-10 flex justify-center items-center ${
 						!modal && 'hidden'
 					}`}
-				/>
+				>
+					<div className='w-[533px] h-[327px] bg-[#D9D9D9] rounded-[20px] px-10 relative'>
+						<Image
+							src={SVGClose}
+							alt='...'
+							className='absolute top-3 right-3 cursor-pointer'
+							onClick={() => {
+								setModal(false)
+							}}
+						/>
+					</div>
+				</section>
 			)}
 		</>
 	)

@@ -4,13 +4,19 @@ import SVGArrow from '@/assets/images/arrow_black.svg'
 import NavBar from '@/components/NavBar/NavBar'
 import Table, { IList } from '@/components/Table/Table'
 import { useGetSitiesQuery } from '@/lib/redux/api/Sities/SitiesApi'
-import { useDeleteUsersMutation, useGetUsersQuery } from '@/lib/redux/api/Users/UsersApi'
+import { IUser } from '@/lib/redux/api/Users/types'
+import {
+	useDeleteUsersMutation,
+	useGetUsersQuery,
+	useLazyGetUserQuery,
+} from '@/lib/redux/api/Users/UsersApi'
 import { useAccessToken } from '@/lib/store/store'
 import { myToast } from '@/ui/toast'
+import SVGClose from '@/assets/images/close2.svg'
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface IData {
 	sity?: string
@@ -23,13 +29,14 @@ const Users = () => {
 	const { data: getSities } = useGetSitiesQuery()
 	const { data: getUsers } = useGetUsersQuery(accessToken!)
 	const [deleteUsers] = useDeleteUsersMutation()
+	const [getUsersLazy, {data: usersLazy}] = useLazyGetUserQuery()
 
 	const [users, setUsers] = useState<IList>({
 		header: [
 			{ name: 'ID' },
 			{ name: 'Город', filter: true },
 			{ name: 'ФИО клиента', filter: true },
-			{ name: 'Телефон'},
+			{ name: 'Телефон' },
 			{ name: 'Оформлено заявок', filter: true },
 			{ name: 'Действия' },
 		],
@@ -40,6 +47,8 @@ const Users = () => {
 	const [select, setSelect] = useState<boolean>(false)
 	const [filterUsers, setFilterUsers] = useState<IList>(users)
 	const [modal, setModal] = useState<boolean>(false)
+	const [user, setUser] = useState<IUser | undefined>()
+	const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => {
 		if (getSities) {
@@ -101,9 +110,39 @@ const Users = () => {
 		}
 	}
 
-	const handleClick = (id: string) => {
-		setModal(true)
-	}
+	const handleClick = useCallback(
+		async (id: string) => {
+			try {
+				// 1. Начало операции - сбрасываем состояния
+				setIsLoading(true)
+				setUser(undefined)
+
+				// 2. Синхронные обновления
+				setModal(true)
+				console.log('Modal state set to true')
+
+				// 3. Асинхронная операция
+				await getUsersLazy({id, token: accessToken!}).unwrap()
+
+				// 4. После получения данных
+				if (usersLazy) {
+					setUser(usersLazy)
+				}
+			} catch (error) {
+				console.error('Error fetching order:', error)
+			} finally {
+				// 5. Финализация
+				setIsLoading(false)
+			}
+		},
+		[accessToken, getUsersLazy]
+	)
+
+	useEffect(() => {
+			if (usersLazy) {
+				setUser(usersLazy)
+			}
+		}, [usersLazy])
 
 	return (
 		<>
@@ -155,17 +194,81 @@ const Users = () => {
 						Очистить
 					</button>
 				</div>
-				<Link
+				{/* <Link
 					className='w-auto h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer flex items-center justify-center px-3'
 					href='#'
 				>
 					Новые заявки
-				</Link>
+				</Link> */}
 			</section>
-			<Table list={filterUsers} deleteFunc={deleteUserFunc} onClick={handleClick} />
-			<section className='fixed w-full h-full top-0 left-0 bg-[#00000099]'>
-
-			</section>
+			<Table
+				list={filterUsers}
+				deleteFunc={deleteUserFunc}
+				onClick={handleClick}
+			/>
+			{user && !isLoading ? (
+				<section
+					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
+						!modal && 'hidden'
+					} flex justify-center items-center`}
+				>
+					<div className='w-[533px] h-[327px] bg-[#D9D9D9] rounded-[20px] p-10 relative'>
+						<Image
+							src={SVGClose}
+							alt='...'
+							className='absolute top-3 right-3 cursor-pointer'
+							onClick={() => {
+								setModal(false)
+							}}
+						/>
+						<h2 className='font-bold text-[20px] mb-8'>
+							ID {user.id.slice(0, 3) +
+										'-' +
+										user.id.slice(user.id.length - 3, user.id.length)}
+						</h2>
+						<div className='flex items-start justify-between mb-5'>
+							<div>
+								<p>Город: {user.cityDto.name}</p>
+								<p>Телефон: {user.phoneNumber}</p>
+							</div>
+							<div>
+								<h2 className='font-semibold'>Оформлено заявок:</h2>
+								<p>{user.countCreatedOrders}</p>
+							</div>
+						</div>
+						<div className='flex items-start justify-between mb-10'>
+							<div>
+								<p>Имя: {user.firstName}</p>
+								<p>Фамилия: {user.lastName}</p>
+							</div>
+							<div>
+								<h2 className='font-semibold'>Отмененных заявок:</h2>
+								<p>{user.countCanceledOrders}</p>
+							</div>
+						</div>
+						<button className='w-full h-[39px] rounded-[20px] bg-[#8B8181] cursor-pointer' onClick={() => deleteUserFunc(user.id)}>Заблокировать и удалить аккаунт</button>
+					</div>
+				</section> 
+			)
+				: (
+					<section
+					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
+						!modal && 'hidden'
+					} justify-center items-center flex`}
+				>
+					<div className='w-[533px] h-[327px] bg-[#D9D9D9] rounded-[20px] p-10 relative'>
+						<Image
+							src={SVGClose}
+							alt='...'
+							className='absolute top-3 right-3 cursor-pointer'
+							onClick={() => {
+								setModal(false)
+							}}
+						/>
+					</div>
+				</section>
+				)
+			}
 		</>
 	)
 }

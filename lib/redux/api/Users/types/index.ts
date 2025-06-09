@@ -2,12 +2,17 @@ export interface IUsersRequest {
 	content: IUser[]
 }
 
+export interface IUserResponse {
+	token: string;
+	id: string;
+}
+
 export interface IDeleteUser {
 	id: string;
 	token: string;
 }
 
-interface IUser {
+export interface IUser {
 	id: string;
 	firstName: string;
 	lastName: string;
