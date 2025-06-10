@@ -55,12 +55,12 @@ const SignIn = () => {
 			<AuthInput placeholder='E-mail' type='text' onChange={setEmail} />
 			<AuthInput placeholder='Пароль' type='password' onChange={setPassword} />
 			<AuthButton onClick={handleClick} text='Войти' />
-			<Link
+			{/* <Link
 				href='/auth/forgot'
 				className='text-[#807E7E] text-2xl font-bold mt-7'
 			>
 				Забыли пароль?
-			</Link>
+			</Link> */}
 			<AuthLink link='/auth/signup' value='Зарегистрировать новый аккаунт' />
 		</>
 	)
