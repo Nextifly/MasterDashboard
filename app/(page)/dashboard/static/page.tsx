@@ -1,6 +1,8 @@
 'use client'
 
 import NavBar from '@/components/NavBar/NavBar'
+import { useGetStaticQuery } from '@/lib/redux/api/Static/StaticApi'
+import { useAccessToken } from '@/lib/store/store'
 import {
 	ArcElement,
 	Chart as ChartJS,
@@ -14,10 +16,13 @@ import { Pie } from 'react-chartjs-2'
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
 
 const Static = () => {
+	const { accessToken } = useAccessToken()
+	const { data: staticData } = useGetStaticQuery(accessToken!)
+
 	const defaultData = {
-		total: 386,
-		closed: 350,
-		open: 36,
+		total: staticData?.totalOrders || 0,
+		closed: staticData?.closedOrders || 0,
+		open: staticData?.openOrders || 0,
 	}
 
 	// Данные для диаграммы
@@ -70,17 +75,45 @@ const Static = () => {
 					<h2 className='font-bold text-[20px] mb-12'>
 						Общая статистика заявок
 					</h2>
-					<h2 className='font-bold text-[20px]'>Всего заявок: 386</h2>
+					<h2 className='font-bold text-[20px]'>
+						Всего заявок: {staticData ? staticData.totalOrders : 0}
+					</h2>
 					<div className='flex items-center justify-start gap-2'>
 						<div className='size-[15px] rounded-[15px] bg-[#45B3AA] mt-1' />
-						<p className='font-bold text-[20px]'>Закрытых заявок: 350 (70%)</p>
+						<p className='font-bold text-[20px]'>
+							Закрытых заявок:{' '}
+							{staticData &&
+								staticData.closedOrders +
+									' ' +
+									'(' +
+									Math.round(
+										(staticData.closedOrders / staticData.totalOrders) * 100
+									) +
+									'%' +
+									')'}
+						</p>
 					</div>
 					<div className='flex items-center justify-start gap-2 mb-12'>
 						<div className='size-[15px] rounded-[15px] bg-[#777776] mt-1' />
-						<p className='font-bold text-[20px]'>Открытых заявок: 36 (30%)</p>
+						<p className='font-bold text-[20px]'>
+							Открытых заявок:{' '}
+							{staticData &&
+								staticData.openOrders +
+									' ' +
+									'(' +
+									Math.round(
+										(staticData.openOrders / staticData.totalOrders) * 100
+									) +
+									'%' +
+									')'}
+						</p>
 					</div>
 					<div className='max-w-[350px]'>
-						<Pie data={pieChartData} options={options} style={{ height: 350}} />
+						<Pie
+							data={pieChartData}
+							options={options}
+							style={{ height: 350 }}
+						/>
 					</div>
 				</div>
 				<section className='w-[70%]'>
@@ -89,22 +122,20 @@ const Static = () => {
 							<h2 className='font-bold text-[20px] mb-6'>
 								Общая статистика мастеров
 							</h2>
-							<p className='font-normal text-[20px]'>Всего мастеров: 570</p>
-							<p className='font-normal text-[20px]'>Новых в этом месяце: 13</p>
+							<p className='font-normal text-[20px]'>Всего мастеров: {staticData ? staticData.totalMasters : 0}</p>
+							<p className='font-normal text-[20px]'>Новых в этом месяце: {staticData ? staticData.newMastersThisMonth : 0}</p>
 						</div>
 						<div>
 							<h2 className='font-bold text-[20px] mb-6'>
 								Топ-3 мастеров по закрытию
 							</h2>
-							<p className='font-normal text-[20px]'>
-								Иванов Иван Иванович (23)
-							</p>
-							<p className='font-normal text-[20px]'>
-								Иванов Иван Иванович (19)
-							</p>
-							<p className='font-normal text-[20px]'>
-								Иванов Иван Иванович (17)
-							</p>
+							{
+								staticData && staticData.topMasters.map((master) => (
+										<p className='font-normal text-[20px]' key={master.firstName + master.lastName + master.closedOrders}>
+											{master.firstName + ' ' + master.lastName} ({master.closedOrders})
+										</p>
+								))
+							}
 						</div>
 					</div>
 					<div className='flex justify-between items-start mb-8'>
@@ -112,35 +143,31 @@ const Static = () => {
 							<h2 className='font-bold text-[20px] mb-6'>
 								Количество заявок по городам
 							</h2>
-							<p className='font-normal text-[20px]'>Москва: 257</p>
-							<p className='font-normal text-[20px]'>Екатеринбург: 13</p>
-							<p className='font-normal text-[20px]'>Саратов: 2</p>
-							<p className='font-normal text-[20px]'>Cамара: 10</p>
-							<p className='font-normal text-[20px]'>Волгоград: 96</p>
+							{
+								staticData && staticData.ordersByCity.map((city) => (
+									<p className='font-normal text-[20px]'>{city.city}: {city.count}</p>
+								))
+							}
 						</div>
 						<div>
 							<h2 className='font-bold text-[20px] mb-6'>
-								Количество пользователей<br/>по городам
+								Количество пользователей
+								<br />
+								по городам
 							</h2>
-							<p className='font-normal text-[20px]'>
-								Москва: 257
-							</p>
-							<p className='font-normal text-[20px]'>
-								Екатеринбург: 13
-							</p>
-							<p className='font-normal text-[20px]'>
-								Саратов: 2
-							</p>
-							<p className='font-normal text-[20px]'>
-								Самара: 10
-							</p>
-							<p className='font-normal text-[20px]'>
-								Волгоград: 96
-							</p>
+							{
+								staticData && staticData.usersByCity.map((city) => (
+									<p className='font-normal text-[20px]'>{city.city}: {city.count}</p>
+								))
+							}
 						</div>
 					</div>
-					<h2 className='font-bold text-[20px]'>Ориентировочная сумма закрытых заявок за месяц: 19356 р.</h2>
-					<h2 className='font-bold text-[20px]'>Общая сумма поступлений: 35600 р.</h2>
+					<h2 className='font-bold text-[20px]'>
+						Ориентировочная сумма закрытых заявок за месяц: {staticData ? staticData.monthlyRevenue : 0} р.
+					</h2>
+					<h2 className='font-bold text-[20px]'>
+						Общая сумма поступлений: {staticData ? staticData.totalRevenue : 0} р.
+					</h2>
 				</section>
 			</div>
 		</>

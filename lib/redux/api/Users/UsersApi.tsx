@@ -12,7 +12,7 @@ export const UsersApi = createApi({
 	endpoints: builder => ({
 		getUsers: builder.query<IUsersRequest,string>({
 			query: (token) => ({
-				url: 'https://109.73.198.81:9093/api/admin/client-profiles',
+				url: '/admin/client-profiles',
 				headers: {
 					Authorization: `Bearer ${token}`,
 				}
@@ -20,7 +20,7 @@ export const UsersApi = createApi({
 		}),
 		getUser: builder.query<IUser,IUserResponse>({
 			query: ({id, token}) => ({
-				url: 'https://109.73.198.81:9093/api/admin/client-profiles/'+id,
+				url: '/admin/client-profiles/'+id,
 				headers: {
 					Authorization: `Bearer ${token}`,
 				}

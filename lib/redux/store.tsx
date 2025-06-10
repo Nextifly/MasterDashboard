@@ -6,6 +6,7 @@ import { CategoriesApi } from './api/Categories/CategoriesApi'
 import { UsersApi } from './api/Users/UsersApi'
 import { OrdersApi } from './api/Orders/OrdersApi'
 import { MastersApi } from './api/Masters/MastersApi'
+import { StaticApi } from './api/Static/StaticApi'
 
 export const store = configureStore({
 	reducer: {
@@ -15,7 +16,8 @@ export const store = configureStore({
 		[CategoriesApi.reducerPath]: CategoriesApi.reducer,
 		[UsersApi.reducerPath]: UsersApi.reducer,
 		[OrdersApi.reducerPath]: OrdersApi.reducer,
-		[MastersApi.reducerPath]: MastersApi.reducer
+		[MastersApi.reducerPath]: MastersApi.reducer,
+		[StaticApi.reducerPath]: StaticApi.reducer,
 	},
 	middleware: getDefaultMiddleware => 
 		getDefaultMiddleware().concat(
@@ -25,6 +27,7 @@ export const store = configureStore({
 			CategoriesApi.middleware,
 			UsersApi.middleware,
 			OrdersApi.middleware,
-			MastersApi.middleware
+			MastersApi.middleware,
+			StaticApi.middleware
 		)
 })
