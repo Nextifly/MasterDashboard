@@ -50,10 +50,8 @@ const News = () => {
 		let list: string[][] = news.list
 		let updateList = list.map(value => {
 			if (value[1] == activeCity) return value
+			return
 		})
-		if (updateList === undefined) {
-			updateList = []
-		}
 		setFilterNews({ header: news.header, list: updateList as string[][] })
 	}
 
@@ -94,7 +92,11 @@ const News = () => {
 
 	const deleteNewsFunc = async (id: string) => {
 		try {
-			await deleteNews({ id, token: accessToken! })
+			const response = await deleteNews({ id, token: accessToken! })
+			if (response.error) {
+				myToast({ message: 'Ошибка при удалении!', type: 'error' })
+				return
+			}
 			myToast({ message: 'Успешно удалено!', type: 'success' })
 			setTimeout(() => {
 				window.location.reload()
@@ -102,10 +104,6 @@ const News = () => {
 		} catch (e) {
 			myToast({ message: 'Ошибка удаления', type: 'error' })
 		}
-	}
-
-	const handleClick = async (id: string) => {
-		
 	}
 
 	return (
@@ -136,7 +134,6 @@ const News = () => {
 				<Link className='w-auto h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer flex items-center justify-center px-3' href="/dashboard/news/add">Добавить новости</Link>
 			</section>
 			<Table
-				onClick={handleClick}
 				list={filterNews}
 				deleteFunc={deleteNewsFunc}
 			/>

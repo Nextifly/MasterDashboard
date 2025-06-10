@@ -1,33 +1,87 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IDeleteMaster, IMastersRequest } from './types'
+import {
+	IMasterRequest,
+	IMasterResponse,
+	IMastersApprovedRequest,
+	IMastersUnderReviewRequest,
+} from './types'
 
-
-const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
+const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string
 
 export const MastersApi = createApi({
-	reducerPath: "masters",
+	reducerPath: 'masters',
 	baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
-  }),
+		baseUrl: BASE_URL,
+	}),
 	endpoints: builder => ({
-		getMasters: builder.query<IMastersRequest,string>({
-			query: (token) => ({
-				url: 'https://109.73.198.81:9093/api/admin/client-profiles',
+		getMastersApproved: builder.query<IMastersApprovedRequest, string>({
+			query: token => ({
+				url: '/admin/master-profiles',
 				headers: {
 					Authorization: `Bearer ${token}`,
-				}
-			})
+				},
+			}),
 		}),
-		deleteMasters: builder.mutation<void,IDeleteMaster>({
-			query: ({id, token}) => ({
-				url: "/admin/client-profiles/" + id,
-				method: 'DELETE',
+		getMastersUnderReview: builder.query<IMastersUnderReviewRequest[], string>({
+			query: token => ({
+				url: '/master-requests',
 				headers: {
 					Authorization: `Bearer ${token}`,
-				}
+				},
+			}),
+		}),
+		getMasterApproved: builder.query<IMasterRequest, IMasterResponse>({
+			query: ({ id, token }) => ({
+				url: '/admin/master-profiles/' + id,
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}),
+		}),
+		getMasterUnderReview: builder.query<IMasterRequest, IMasterResponse>({
+			query: ({ id, token }) => ({
+				url: '/master-requests/' + id,
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}),
+		}),
+		approveMaster: builder.mutation<void, IMasterResponse>({
+			query: ({ id, token }) => ({
+				url: `/master-requests/${id}/approve`,
+				method: 'PATCH',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}),
+		}),
+		rejectMaster: builder.mutation<void, IMasterResponse>({
+			query: ({ id, token }) => ({
+				url: `/master-requests/${id}/reject`,
+				method: 'PATCH',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}),
+		}),
+		deleteMaster: builder.mutation<void, IMasterResponse>({
+			query: ({id,token}) => ({
+				url: '/admin/master-profiles/'+id,
+				method: "DELETE",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
 			})
 		})
-	})
+	}),
 })
 
-export const {useGetMastersQuery, useDeleteMastersMutation} = MastersApi;
+export const {
+	useGetMastersApprovedQuery,
+	useGetMastersUnderReviewQuery,
+	useLazyGetMasterApprovedQuery,
+	useLazyGetMasterUnderReviewQuery,
+	useApproveMasterMutation,
+	useRejectMasterMutation,
+	useDeleteMasterMutation
+} = MastersApi

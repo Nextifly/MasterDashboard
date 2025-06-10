@@ -9,19 +9,27 @@ import { useEffect, useState, ReactNode } from 'react'
 interface IToken {
 	role: string
 	email: string
+	exp: number
 }
 
 export default function DashboardLayout ({children}: {children: ReactNode}) {
 		const router = useRouter()
 		const [emailData, setEmailData] = useState<string>()
-		const { accessToken } = useAccessToken()
-		const { refreshToken } = useRefreshToken()
+		const { accessToken, deleteAccessToken } = useAccessToken()
+		const { refreshToken, deleteRefreshToken } = useRefreshToken()
 
 		useEffect(() => {
 		try {
 			const decoded: IToken = jwtDecode<JwtPayload>(
 				window.localStorage.getItem('accessToken') as string
 			) as IToken
+			const currentTimeMs = Date.now();
+			const expMs = decoded.exp * 1000;
+			if (currentTimeMs >= expMs ) {
+				deleteAccessToken()
+				deleteRefreshToken()
+				router.push('/auth/signin')
+			}
 			setEmailData(decoded.email)
 		} catch (error) {
 			router.push('/auth/signup')

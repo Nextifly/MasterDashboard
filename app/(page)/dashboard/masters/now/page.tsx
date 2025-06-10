@@ -1,103 +1,80 @@
 'use client'
 
-import SVGArrow from '@/assets/images/arrow_black.svg'
+import SVGArrowBack from '@/assets/images/arrow_back.svg'
 import SVGClose from '@/assets/images/close2.svg'
 import NavBar from '@/components/NavBar/NavBar'
 import Table, { IList } from '@/components/Table/Table'
 import {
-	useDeleteMasterMutation,
-	useGetMastersApprovedQuery,
-	useLazyGetMasterApprovedQuery,
+	useGetMastersUnderReviewQuery,
+	useApproveMasterMutation,
+	useLazyGetMasterUnderReviewQuery,
+	useRejectMasterMutation,
 } from '@/lib/redux/api/Masters/MastersApi'
 import {
 	IEducation,
 	IMarital,
 	IMasterRequest,
 } from '@/lib/redux/api/Masters/types'
-import { useGetSitiesQuery } from '@/lib/redux/api/Sities/SitiesApi'
 import { useAccessToken } from '@/lib/store/store'
-import { myToast } from '@/ui/toast'
 
+import { myToast } from '@/ui/toast'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
-const Masters = () => {
+const MastersNow = () => {
 	const { accessToken } = useAccessToken()
-	const { data: getSities } = useGetSitiesQuery()
-	const { data: getMasters } = useGetMastersApprovedQuery(accessToken!)
-	const [getMaster, { data: masterData }] = useLazyGetMasterApprovedQuery()
-	const [deleteMaster] = useDeleteMasterMutation()
+	const { data: getMasters } = useGetMastersUnderReviewQuery(accessToken!)
+	const [getMaster, { data: masterData }] = useLazyGetMasterUnderReviewQuery()
+	const [approveMaster] = useApproveMasterMutation()
+	const [rejectMaster] = useRejectMasterMutation()
+
 	const [masters, setMasters] = useState<IList>({
 		header: [
 			{ name: 'ID' },
 			{ name: 'Город', filter: true },
 			{ name: 'ФИО клиента', filter: true },
 			{ name: 'Телефон' },
-			{ name: 'Сдано заявок', filter: true },
+			{ name: 'Опыт работы', filter: true },
 			{ name: 'Действия' },
 		],
 		list: [],
 	})
-	const [cities, setCities] = useState<string[]>([])
-	const [activeCity, setActiveCity] = useState<string>('Город')
-	const [select, setSelect] = useState<boolean>(false)
 	const [filterMasters, setFilterMasters] = useState<IList>(masters)
 	const [modal, setModal] = useState<boolean>(false)
 	const [master, setMaster] = useState<IMasterRequest | undefined>()
-	const [masterImg, setMasterImg] = useState<string[]>()
 	const [isLoading, setIsLoading] = useState(false)
-
-	useEffect(() => {
-		if (getSities) {
-			const arr = getSities.map(value => value.name)
-			setCities(arr)
-		}
-	}, [getSities])
 
 	useEffect(() => {
 		if (getMasters) {
 			let newArr: string[][] = []
-			getMasters.content.map(master => {
-				const id = `${master.id.slice(0, 3)}-${master.id.slice(
-					master.id.length - 3,
-					master.id.length
-				)}`
-				const masterName = `${master.firstName} ${master.lastName}`
+			getMasters.map(master => {
+				if (master.verificationStatus === 'UNDER_REVIEW') {
+					getMaster({ id: master.id, token: accessToken! })
+					const id = `${master.id.slice(0, 3)}-${master.id.slice(
+						master.id.length - 3,
+						master.id.length
+					)}`
+					const masterName = `${master.firstName} ${master.lastName}`
 
-				let arr = []
-				arr.push(id.slice(0, 3) + '-' + id.slice(id.length - 3, id.length))
-				arr.push(master.cityDto.name)
-				arr.push(masterName)
-				arr.push(master.phoneNumber)
-				arr.push(master.totalCompletedOrders.toString())
-				arr.push(master.id)
-				newArr.push(arr)
+					let arr = []
+					arr.push(id.slice(0, 3) + '-' + id.slice(id.length - 3, id.length))
+					arr.push(master.cityDto.name)
+					arr.push(masterName)
+					arr.push(master.phoneNumber)
+					arr.push(master.workExperience || '0')
+					arr.push(master.id)
+					newArr.push(arr)
+				}
 			})
 			setMasters({ header: masters.header, list: newArr })
 			setFilterMasters({ header: masters.header, list: newArr })
 		}
 	}, [getMasters])
 
-	const handleApply = () => {
-		if (activeCity == 'Город') return
-		let list: string[][] = masters.list
-		let updateList = list.map(value => {
-			if (value[1] == activeCity) return value
-			return
-		})
-		setFilterMasters({ header: masters.header, list: updateList as string[][] })
-	}
-
-	const handleClear = () => {
-		setFilterMasters(masters)
-		setActiveCity('Город')
-	}
-
 	const handleClick = useCallback(
 		async (id: string) => {
 			try {
-				console.log(id)
 				// 1. Начало операции - сбрасываем состояния
 				setIsLoading(true)
 				setMaster(undefined)
@@ -108,7 +85,6 @@ const Masters = () => {
 
 				// 3. Асинхронная операция
 				await getMaster({ id, token: accessToken! }).unwrap()
-				console.log(masterData)
 
 				// 4. После получения данных
 				if (masterData) {
@@ -148,78 +124,43 @@ const Masters = () => {
 			: 'Среднее специальное'
 	}
 
-	const deleteUserFunc = async (id: string) => {
-		console.log(id)
+	const handlyApproved = async (id: string) => {
 		try {
-			const response = await deleteMaster({ id, token: accessToken! })
+			const response = await approveMaster({ id, token: accessToken! })
 			if (response.error) {
-				myToast({ message: 'Ошибка при удалении!', type: 'error' })
-				return
+				return myToast({ message: 'Ошибка!', type: 'error' })
 			}
-			myToast({ message: 'Пользователь удалён!', type: 'success' })
+			myToast({ message: 'Успешно!', type: 'success' })
 			setTimeout(() => {
 				window.location.reload()
 			}, 2000)
 		} catch (e) {
-			myToast({ message: 'Ошибка при удалении!', type: 'error' })
+			myToast({ message: 'Ошибка!', type: 'error' })
+		}
+	}
+
+	const handlyReject = async (id: string) => {
+		try {
+			const response = await rejectMaster({ id, token: accessToken! })
+			if (response.error) {
+				return myToast({ message: 'Ошибка!', type: 'error' })
+			}
+			myToast({ message: 'Успешно!', type: 'success' })
+			setTimeout(() => {
+				window.location.reload()
+			}, 2000)
+		} catch (e) {
+			myToast({ message: 'Ошибка!', type: 'error' })
 		}
 	}
 
 	return (
 		<>
 			<NavBar active='masters' />
-			<section className='flex justify-between px-30 my-6'>
-				<div className='flex justify-start gap-4 items-center'>
-					<h2 className='font-medium text-[20px]'>Фильтр:</h2>
-					<div className='relative'>
-						<div
-							className='w-[175px] px-3 h-8 flex justify-between items-center gap-3 bg-white border-1 border-[#9E9E9E] rounded-[20px] cursor-pointer'
-							onClick={() => setSelect(!select)}
-						>
-							<h2>{activeCity}</h2>
-							<Image
-								src={SVGArrow}
-								alt=''
-								className={`${select && 'rotate-180'}`}
-							/>
-						</div>
-						<div
-							className={`absolute w-full h-auto px-5 py-3 top-10 left-0 bg-white z-10 border-1 border-[#9E9E9E] rounded-[20px] ${
-								!select && 'hidden'
-							} w-[250px]`}
-						>
-							{cities.map(city => (
-								<h2
-									className='cursor-pointer'
-									key={city}
-									onClick={() => {
-										setSelect(false)
-										setActiveCity(city)
-									}}
-								>
-									{city}
-								</h2>
-							))}
-						</div>
-					</div>
-					<button
-						onClick={handleApply}
-						className='w-[109px] h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer'
-					>
-						Применить
-					</button>
-					<button
-						onClick={handleClear}
-						className='w-[109px] h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer'
-					>
-						Очистить
-					</button>
-				</div>
-				<Link
-					className='w-auto h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer flex items-center justify-center px-3'
-					href='/dashboard/masters/now'
-				>
-					Новые заявки
+			<section className='px-30 my-6'>
+				<Link href='/dashboard/masters' className='flex gap-5 items-center'>
+					<Image src={SVGArrowBack} alt='...' />
+					<h2 className='text-2xl'>Новые заявки</h2>
 				</Link>
 			</section>
 			<Table list={filterMasters} onClick={handleClick} />
@@ -284,23 +225,18 @@ const Masters = () => {
 								</div>
 							</div>
 						</div>
-						<div className='flex justify-between items-center'>
-							<div>
-								<h2 className='font-bold text-[20px]'>Выполнено заявок:</h2>
-								<ul>
-									<li className='list-disc ml-8 font-bold text-[20px]'>
-										Месяц: {master.completedOrdersThisMonth || '0'}
-									</li>
-									<li className='list-disc ml-8 font-bold text-[20px]'>
-										Весь период: {master.totalCompletedOrders || '0'}
-									</li>
-								</ul>
-							</div>
+						<div className='flex justify-between items-center mt-10'>
 							<button
 								className='rounded-[10px] bg-[#8B8181] text-white text-[20px] h-[39px] w-[257px] cursor-pointer'
-								onClick={() => deleteUserFunc(master.id)}
+								onClick={() => handlyApproved(master.id)}
 							>
-								Удалить профиль
+								Принять заявку
+							</button>
+							<button
+								className='rounded-[10px] bg-[#8B8181] text-white text-[20px] h-[39px] w-[257px] cursor-pointer'
+								onClick={() => handlyReject(master.id)}
+							>
+								Отклонить заявку
 							</button>
 						</div>
 					</div>
@@ -327,4 +263,4 @@ const Masters = () => {
 	)
 }
 
-export default Masters
+export default MastersNow

@@ -15,14 +15,7 @@ import { myToast } from '@/ui/toast'
 import SVGClose from '@/assets/images/close2.svg'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-
-interface IData {
-	sity?: string
-	category?: string
-	status?: string
-}
 
 const Users = () => {
 	const { accessToken } = useAccessToken()
@@ -86,10 +79,8 @@ const Users = () => {
 		let list: string[][] = users.list
 		let updateList = list.map(value => {
 			if (value[1] == activeCity) return value
+			return
 		})
-		if (updateList === undefined) {
-			updateList = []
-		}
 		setFilterUsers({ header: users.header, list: updateList as string[][] })
 	}
 
@@ -100,13 +91,17 @@ const Users = () => {
 
 	const deleteUserFunc = async (id: string) => {
 		try {
-			await deleteUsers({ id, token: accessToken! })
+			const response = await deleteUsers({ id, token: accessToken! })
+			if (response.error) {
+				myToast({ message: 'Ошибка при удалении!', type: 'error' })
+				return
+			}
 			myToast({ message: 'Пользователь удалён!', type: 'success' })
 			setTimeout(() => {
 				window.location.reload()
 			}, 2000)
 		} catch (e) {
-			myToast({ message: 'Ошибка удаления', type: 'error' })
+			myToast({ message: 'Ошибка при удалении', type: 'error' })
 		}
 	}
 
@@ -194,12 +189,6 @@ const Users = () => {
 						Очистить
 					</button>
 				</div>
-				{/* <Link
-					className='w-auto h-8 text-white bg-[#9E9E9E] rounded-[20px] text-[15px] cursor-pointer flex items-center justify-center px-3'
-					href='#'
-				>
-					Новые заявки
-				</Link> */}
 			</section>
 			<Table
 				list={filterUsers}

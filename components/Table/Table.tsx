@@ -1,9 +1,9 @@
 'use client'
 
-import ImageEye from '@/assets/images/close_eye.png'
 import SVGDelete from '@/assets/images/delete.svg'
 import SVGEye from '@/assets/images/eye2.svg'
 import SVGFilter from '@/assets/images/filter.svg'
+import SVGUpdate from '@/assets/images/update.svg'
 import Image from 'next/image'
 import { memo, useEffect, useState } from 'react'
 
@@ -19,11 +19,12 @@ export interface IList {
 
 interface ITable {
 	list: IList
-	deleteFunc: (id: string) => void
-	onClick: (id: string) => void
+	deleteFunc?: (id: string) => void
+	onClick?: (id: string) => void
+	onUpdate?: (id: string) => void
 }
 
-const Table = memo(({ list: initialList, deleteFunc, onClick }: ITable) => {
+const Table = ({ list: initialList, deleteFunc, onClick, onUpdate }: ITable) => {
 	const [sortConfig, setSortConfig] = useState<{
 		column: string | null
 		direction: 'asc' | 'desc'
@@ -55,10 +56,7 @@ const Table = memo(({ list: initialList, deleteFunc, onClick }: ITable) => {
 
 			newList.sort((a, b) => {
 				// Для числовых колонок (например, №)
-				if (
-					columnName === '№' ||
-					columnName === 'Оформлено заявок'
-				) {
+				if (columnName === '№' || columnName === 'Оформлено заявок') {
 					const numA = parseInt(a[columnIndex])
 					const numB = parseInt(b[columnIndex])
 					return direction === 'asc' ? numA - numB : numB - numA
@@ -116,48 +114,59 @@ const Table = memo(({ list: initialList, deleteFunc, onClick }: ITable) => {
 					</tr>
 				</thead>
 				<tbody>
-					{sortedList.list[0] !== undefined &&
+					{sortedList.list.length > 0 &&
 						sortedList.list.map((row, rowIndex) => (
-							<tr className='h-15 text-center' key={rowIndex}>
-								{row.map(
-									(cell, cellIndex) =>
-										(cellIndex !== row.length - 1 ? (
-											<td
-												className={`font-medium text-[15px] ${
-													cellIndex === 0 && 'text-start pl-2'
-												}`}
-												key={`${rowIndex}-${cellIndex}`}
-											>
-												{cell}
-											</td>
-										) : (
-											<td
-												className='font-medium text-[15px]'
-												key={`actions-${rowIndex}`}
-											>
-												<div className='flex justify-around items-center'>
+							row !== undefined && (<tr className='h-15 text-center' key={rowIndex}>
+								{row.map((cell, cellIndex) =>
+									cellIndex !== row.length - 1 ? (
+										<td
+											className={`font-medium text-[15px] ${
+												cellIndex === 0 && 'text-start pl-2'
+											}`}
+											key={`${rowIndex}-${cellIndex}`}
+										>
+											{cell}
+										</td>
+									) : (
+										<td
+											className='font-medium text-[15px]'
+											key={`actions-${rowIndex}`}
+										>
+											<div className='flex justify-around items-center'>
+												{onClick && (
 													<Image
 														src={SVGEye}
 														alt='View'
 														className='cursor-pointer'
 														onClick={() => onClick(cell)}
 													/>
+												)}
+												{deleteFunc && (
 													<Image
 														src={SVGDelete}
 														alt='Delete'
 														className='cursor-pointer'
 														onClick={() => deleteFunc(cell)}
 													/>
-												</div>
-											</td>
-										))
+												)}
+												{onUpdate && (
+													<Image
+														src={SVGUpdate}
+														alt='Delete'
+														className='cursor-pointer'
+														onClick={() => onUpdate(cell)}
+													/>
+												)}
+											</div>
+										</td>
+									)
 								)}
-							</tr>
+							</tr>)
 						))}
 				</tbody>
 			</table>
 		</section>
 	)
-})
+}
 
 export default Table
