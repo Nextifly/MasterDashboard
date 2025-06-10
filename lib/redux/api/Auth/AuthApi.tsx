@@ -10,7 +10,7 @@ export const AuthApi = createApi({
     baseUrl: BASE_URL,
   }),
 	endpoints: builder => ({
-		signUp: builder.mutation<ISignInRequest,ISignUpResponse>({
+		signUp: builder.mutation<ISignUpRequest,ISignUpResponse>({
 			query: user => ({
 				url: '/admin/register',
 				method: 'POST',

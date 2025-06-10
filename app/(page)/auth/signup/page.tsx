@@ -30,10 +30,10 @@ const SignUp = () => {
 
 		try {
 			const response = await signUp(user)
-			if (response.data?.message || !response.data) {
+			if (response.error) {
 				return myToast({ message: 'Аккаунт уже существует.', type: 'error' })
 			} else {
-				myToast({ message: 'Успешная регистрация.', type: 'error' })
+				myToast({ message: 'Успешная регистрация.', type: 'success' })
 				setTimeout(() => {
 					router.push('/auth/signin')
 				}, 2500)
