@@ -16,7 +16,6 @@ export interface ISignInResponse {
 export interface ISignInRequest {
 	accessToken?: string;
 	refreshToken?: string;
-	message?: string;
 }
 
 export interface IForgot {

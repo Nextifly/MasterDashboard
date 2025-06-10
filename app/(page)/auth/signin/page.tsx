@@ -41,7 +41,7 @@ const SignIn = () => {
 					router.push('/')
 				}, 2500)
 			}
-			if (response.data?.message || !response.data) {
+			if (response?.error) {
 				return myToast({ message: 'Неверные данные.', type: 'error' })
 			}
 		} catch (e) {

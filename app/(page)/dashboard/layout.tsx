@@ -1,6 +1,7 @@
 'use client'
 
 import Header from '@/components/Header/Header'
+import { useUpdateTokenMutation } from '@/lib/redux/api/Auth/AuthApi'
 import { useAccessToken, useRefreshToken } from '@/lib/store/store'
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import { useRouter } from 'next/navigation'
@@ -15,8 +16,9 @@ interface IToken {
 export default function DashboardLayout ({children}: {children: ReactNode}) {
 		const router = useRouter()
 		const [emailData, setEmailData] = useState<string>()
-		const { accessToken, deleteAccessToken } = useAccessToken()
-		const { refreshToken, deleteRefreshToken } = useRefreshToken()
+		const { accessToken, deleteAccessToken, setAccessToken } = useAccessToken()
+		const { refreshToken, deleteRefreshToken, setRefreshToken } = useRefreshToken()
+		const [updateToken] = useUpdateTokenMutation()
 
 		useEffect(() => {
 		try {
@@ -26,9 +28,16 @@ export default function DashboardLayout ({children}: {children: ReactNode}) {
 			const currentTimeMs = Date.now();
 			const expMs = decoded.exp * 1000;
 			if (currentTimeMs >= expMs ) {
-				deleteAccessToken()
-				deleteRefreshToken()
-				router.push('/auth/signin')
+				const refreshTokenFunc = async () => {
+					const response = await updateToken(refreshToken!)
+					if (response.error) {
+						router.push('/auth/login')
+					} else {
+						setAccessToken(response.data.accessToken!)
+						setRefreshToken(response.data.refreshToken!)
+					}
+				}
+				refreshTokenFunc()
 			}
 			setEmailData(decoded.email)
 		} catch (error) {

@@ -13,32 +13,39 @@ export const AuthApi = createApi({
 		signUp: builder.mutation<ISignInRequest,ISignUpResponse>({
 			query: user => ({
 				url: '/admin/register',
-				method: 'post',
+				method: 'POST',
 				body: user
 			}),
 		}),
 		signIn: builder.mutation<ISignInRequest,ISignInResponse>({
 			query: user => ({
 				url: '/admin/login',
-				method: 'post',
+				method: 'POST',
 				body: user
 			}),
 		}),
 		forgot: builder.mutation<void,IForgot>({
 			query: user => ({
 				url: '/admin/password/reset-confirm',
-				method: 'patch',
+				method: 'PATCH',
 				body: user
 			}),
 		}),
 		logout: builder.mutation<void,ILogout>({
 			query: user => ({
 				url: '/admin/logout',
-				method: 'post',
+				method: 'POST',
 				body: user
+			})
+		}),
+		updateToken: builder.mutation<ISignInRequest,string>({
+			query: token => ({
+				url: '/admin/refresh',
+				method: 'POST',
+				body: token
 			})
 		})
 	})
 })
 
-export const {useForgotMutation, useSignInMutation, useSignUpMutation, useLogoutMutation} = AuthApi;
+export const {useForgotMutation, useSignInMutation, useSignUpMutation, useLogoutMutation, useUpdateTokenMutation} = AuthApi;
