@@ -45,8 +45,16 @@ const Masters = () => {
 	const [filterMasters, setFilterMasters] = useState<IList>(masters)
 	const [modal, setModal] = useState<boolean>(false)
 	const [master, setMaster] = useState<IMasterRequest | undefined>()
-	const [masterImg, setMasterImg] = useState<string[]>()
-	const [isLoading, setIsLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [photoProfileData, setPhotoProfileData] = useState<string | undefined>()
+	const [photoPassportMainData, setPhotoPassportMainData] = useState<
+		string | undefined
+	>()
+	const [photoPassportRegisterData, setPhotoPassportRegisterData] = useState<
+		string | undefined
+	>()
+	const [photoInnData, setPhotoInnData] = useState<string | undefined>()
+	const [photoSnilsData, setPhotoSnilsData] = useState<string | undefined>()
 
 	useEffect(() => {
 		if (getSities) {
@@ -97,7 +105,6 @@ const Masters = () => {
 	const handleClick = useCallback(
 		async (id: string) => {
 			try {
-				console.log(id)
 				// 1. Начало операции - сбрасываем состояния
 				setIsLoading(true)
 				setMaster(undefined)
@@ -107,13 +114,64 @@ const Masters = () => {
 				console.log('Modal state set to true')
 
 				// 3. Асинхронная операция
-				await getMaster({ id, token: accessToken! }).unwrap()
-				console.log(masterData)
+				await getMaster({ id, token: accessToken! })
+				const photoProfileFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-profile`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
+				const photoPassportMainFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-passport-main`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
+				const photoPassportRegisterFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-passport-register`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
+				const photoSnilsFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-snils`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
+				const photoInnFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-inn`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
+
+				const blobProfile = await photoProfileFetch.blob()
+				const blobPassportMain = await photoPassportMainFetch.blob()
+				const blobPassportRegister = await photoPassportRegisterFetch.blob()
+				const blobInn = await photoInnFetch.blob()
+				const blobSnils = await photoSnilsFetch.blob()
 
 				// 4. После получения данных
 				if (masterData) {
 					setMaster(masterData)
 				}
+
+				setPhotoProfileData(URL.createObjectURL(blobProfile))
+				setPhotoPassportMainData(URL.createObjectURL(blobPassportMain))
+				setPhotoPassportRegisterData(URL.createObjectURL(blobPassportRegister))
+				setPhotoInnData(URL.createObjectURL(blobInn))
+				setPhotoSnilsData(URL.createObjectURL(blobSnils))
 			} catch (error) {
 				console.error('Error fetching order:', error)
 			} finally {
@@ -222,7 +280,11 @@ const Masters = () => {
 					Новые заявки
 				</Link>
 			</section>
-			<Table list={filterMasters} onClick={handleClick} deleteFunc={deleteMasterFunc} />
+			<Table
+				list={filterMasters}
+				onClick={handleClick}
+				deleteFunc={deleteMasterFunc}
+			/>
 			{master && !isLoading ? (
 				<section
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
@@ -239,7 +301,15 @@ const Masters = () => {
 							}}
 						/>
 						<div className='flex justify-start items-start gap-10 mb-5'>
-							<div className='size-[305px] rounded-[20px] bg-[#8B8181]' />
+							{photoProfileData ? (
+								<img
+									src={photoProfileData}
+									alt='...'
+									className='size-[305px] rounded-[20px]'
+								/>
+							) : (
+								<div className='size-[305px] rounded-[20px] bg-[#8B8181]' />
+							)}
 							<div>
 								<h2 className='font-bold text-[20px] mb-5'>
 									ID{' '}
@@ -269,9 +339,53 @@ const Masters = () => {
 						<div className='mb-5'>
 							<h2 className='font-bold text-[20px] mb-5'>Фото документов</h2>
 							<div className='flex justify-start items-center gap-5'>
-								<div className='size-[141px] rounded-[20px] bg-[#8B8181]' />
-								<div className='size-[141px] rounded-[20px] bg-[#8B8181]' />
-								<div className='flex flex-col gap-2 max-h-[150px] h-[150px] overflow-auto pr-4'>
+								<div className='flex flex-wrap max-w-[322px] gap-3'>
+									{photoInnData ? (
+										<Link href={photoInnData} target='_blank'>
+											<img
+												src={photoInnData}
+												alt='...'
+												className='size-[141px] rounded-[20px]'
+											/>
+										</Link>
+									) : (
+										<div className='size-[141px] rounded-[20px] bg-[#8B8181]' />
+									)}
+									{photoPassportMainData ? (
+										<Link href={photoPassportMainData} target='_blank'>
+											<img
+												src={photoPassportMainData}
+												alt='...'
+												className='size-[141px] rounded-[20px]'
+											/>
+										</Link>
+									) : (
+										<div className='size-[141px] rounded-[20px] bg-[#8B8181]' />
+									)}
+									{photoPassportRegisterData ? (
+										<Link href={photoPassportRegisterData} target='_blank'>
+											<img
+												src={photoPassportRegisterData}
+												alt='...'
+												className='size-[141px] rounded-[20px]'
+											/>
+										</Link>
+									) : (
+										<div className='size-[141px] rounded-[20px] bg-[#8B8181]' />
+									)}
+									{photoSnilsData ? (
+										<Link href={photoSnilsData} target='_blank'>
+											<img
+												src={photoSnilsData}
+												alt='...'
+												className='size-[141px] rounded-[20px]'
+											/>
+										</Link>
+									) : (
+										<div className='size-[141px] rounded-[20px] bg-[#8B8181]' />
+									)}
+								</div>
+								<div className='flex flex-col gap-2 max-h-[300px] h-[300px] overflow-auto pr-4'>
 									<h2 className='font-bold'>Специализация</h2>
 									{master.masterInfoDto.subserviceDtos.map(subservice => (
 										<p

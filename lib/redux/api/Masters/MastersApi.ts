@@ -65,14 +65,14 @@ export const MastersApi = createApi({
 			}),
 		}),
 		deleteMaster: builder.mutation<void, IMasterResponse>({
-			query: ({id,token}) => ({
-				url: '/admin/master-profiles/'+id,
-				method: "DELETE",
+			query: ({ id, token }) => ({
+				url: '/admin/master-profiles/' + id,
+				method: 'DELETE',
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
-			})
-		})
+			}),
+		}),
 	}),
 })
 
@@ -83,5 +83,5 @@ export const {
 	useLazyGetMasterUnderReviewQuery,
 	useApproveMasterMutation,
 	useRejectMasterMutation,
-	useDeleteMasterMutation
+	useDeleteMasterMutation,
 } = MastersApi

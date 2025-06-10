@@ -30,6 +30,7 @@ const Statements = () => {
 	const [activeStatus, setActiveStatus] = useState<string>('Статус')
 	const [select, setSelect] = useState<string>('')
 	const [modal, setModal] = useState<boolean>(false)
+	const [photoProfileData, setPhotoProfileData] = useState<string | undefined>()
 	const [orders, setOrders] = useState<IList>({
 		header: [
 			{ name: '№' },
@@ -152,11 +153,21 @@ const Statements = () => {
 
 				// 3. Асинхронная операция
 				await getOrder({ id, token: accessToken! }).unwrap()
+				const photoProfileFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-profile`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
+				const blobProfile = await photoProfileFetch.blob()
 
 				// 4. После получения данных
 				if (orderData) {
 					setOrder(orderData)
 				}
+				setPhotoProfileData(URL.createObjectURL(blobProfile))
 			} catch (error) {
 				console.error('Error fetching order:', error)
 			} finally {
@@ -427,7 +438,9 @@ const Statements = () => {
 							<div className='mt-5'>
 								<h2 className='font-bold text-[20px] mb-3'>Данные мастера</h2>
 								<div className='flex justify-start gap-10'>
-									<div className='size-[105px] border-1 border-[#4D4D4D] rounded-[20px]' />
+									{
+										photoProfileData ? <img src={photoProfileData} alt="..." className='size-[105px] rounded-[20px]' /> : <div className='size-[105px] border-1 border-[#4D4D4D] rounded-[20px]' />
+									}
 									<div className='flex flex-col justify-between'>
 										<p className='font-medium text-[20px]'>
 											{order.masterInfoDto.firstName +
