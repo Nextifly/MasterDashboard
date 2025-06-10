@@ -148,7 +148,7 @@ const Masters = () => {
 			: 'Среднее специальное'
 	}
 
-	const deleteUserFunc = async (id: string) => {
+	const deleteMasterFunc = async (id: string) => {
 		console.log(id)
 		try {
 			const response = await deleteMaster({ id, token: accessToken! })
@@ -222,7 +222,7 @@ const Masters = () => {
 					Новые заявки
 				</Link>
 			</section>
-			<Table list={filterMasters} onClick={handleClick} />
+			<Table list={filterMasters} onClick={handleClick} deleteFunc={deleteMasterFunc} />
 			{master && !isLoading ? (
 				<section
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
@@ -298,7 +298,7 @@ const Masters = () => {
 							</div>
 							<button
 								className='rounded-[10px] bg-[#8B8181] text-white text-[20px] h-[39px] w-[257px] cursor-pointer'
-								onClick={() => deleteUserFunc(master.id)}
+								onClick={() => deleteMasterFunc(master.id)}
 							>
 								Удалить профиль
 							</button>
