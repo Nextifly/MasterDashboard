@@ -30,8 +30,8 @@ const SignIn = () => {
 		try {
 			const response = await signIn(user)
 			if (response?.data) {
-				const accessToken = response.data.accessToken
-				const refreshToken = response.data.refreshToken
+				const accessToken = response.data.accessToken!
+				const refreshToken = response.data.refreshToken!
 				setAccessToken(accessToken!)
 				setRefreshToken(refreshToken!)
 				myToast({ message: 'Успешно!', type: 'success' })
