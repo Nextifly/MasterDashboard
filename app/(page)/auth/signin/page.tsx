@@ -36,7 +36,7 @@ const SignIn = () => {
 				setRefreshToken(refreshToken!)
 				myToast({ message: 'Успешно!', type: 'success' })
 				setTimeout(() => {
-					router.push('/')
+					router.push('/dashboard/statements')
 				}, 2500)
 			} else {
 				myToast({ message: 'Неверные данные!', type: 'error' })
