@@ -374,7 +374,7 @@ const Statements = () => {
 						!modal && 'hidden'
 					}`}
 				>
-					<div className='relative w-auto h-auto p-8 bg-[#D9D9D9] rounded-[20px] max-w-[800px] max-h-[700px]'>
+					<div className='relative w-auto h-auto p-8 bg-[#D9D9D9] rounded-[20px] max-w-[800px]'>
 						<Image
 							src={SVGClose}
 							alt='...'

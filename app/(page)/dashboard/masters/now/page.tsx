@@ -231,7 +231,7 @@ const MastersNow = () => {
 						!modal && 'hidden'
 					} flex justify-center items-center`}
 				>
-					<div className='w-auto h-auto bg-[#D9D9D9] rounded-[20px] p-10 relative'>
+					<div className='w-auto h-auto bg-[#D9D9D9] rounded-[20px] p-10 relative max-h-[700px] overflow-auto'>
 						<Image
 							src={SVGClose}
 							alt='...'
