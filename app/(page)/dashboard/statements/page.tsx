@@ -152,12 +152,9 @@ const Statements = () => {
 				console.log('Modal state set to true')
 
 				// 3. Асинхронная операция
-				await getOrder({ id, token: accessToken! }).unwrap()
-
-				// 4. После получения данных
-				if (orderData) {
+				await getOrder({ id, token: accessToken! }).unwrap().then(async(data) => {
 					const photoProfileFetch = await fetch(
-						`https://109.73.198.81:9093/api/master-profiles/${orderData.masterInfoDto.id}/photo-profile`,
+						`https://109.73.198.81:9093/api/master-profiles/${data.masterInfoDto.id}/photo-profile`,
 						{
 							headers: {
 								Authorization: `Bearer ${accessToken}`,
@@ -166,6 +163,10 @@ const Statements = () => {
 					)
 					const blobProfile = await photoProfileFetch.blob()
 					setPhotoProfileData(URL.createObjectURL(blobProfile))
+				})
+
+				// 4. После получения данных
+				if (orderData) {
 					setOrder(orderData)
 				}
 			} catch (error) {
