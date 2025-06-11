@@ -23,7 +23,7 @@ export default function DashboardLayout ({children}: {children: ReactNode}) {
 		useEffect(() => {
 		try {
 			const decoded: IToken = jwtDecode<JwtPayload>(
-				accessToken
+				accessToken!
 			) as IToken
 			const currentTimeMs = Date.now();
 			const expMs = decoded.exp * 1000;
