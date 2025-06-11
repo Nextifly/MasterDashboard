@@ -31,7 +31,7 @@ export default function DashboardLayout ({children}: {children: ReactNode}) {
 				const refreshTokenFunc = async () => {
 					const response = await updateToken(refreshToken!)
 					if (response.error) {
-						router.push('/auth/login')
+						router.push('/auth/signin')
 					} else {
 						setAccessToken(response.data.accessToken!)
 						setRefreshToken(response.data.refreshToken!)
