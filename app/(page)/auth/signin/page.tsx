@@ -7,8 +7,6 @@ import AuthInput from '@/ui/input/AuthInput'
 import AuthLink from '@/ui/text/AuthLink'
 import AuthTitle from '@/ui/text/AuthTitle'
 import { myToast } from '@/ui/toast'
-
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
