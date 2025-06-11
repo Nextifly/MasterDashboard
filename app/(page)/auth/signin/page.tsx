@@ -29,21 +29,16 @@ const SignIn = () => {
 
 		try {
 			const response = await signIn(user)
-			if (response.data?.accessToken && response.data?.refreshToken) {
-				const accessToken = response.data.accessToken
-				const refreshToken = response.data.refreshToken
-				setAccessToken(accessToken)
-				setRefreshToken(refreshToken)
-				myToast({ message: 'Успешно!', type: 'success' })
-				setTimeout(() => {
-					router.push('/')
-				}, 2500)
-			}
-			if (response?.error) {
-				return myToast({ message: 'Неверные данные.', type: 'error' })
-			}
+			const accessToken = response.data.accessToken
+			const refreshToken = response.data.refreshToken
+			setAccessToken(accessToken)
+			setRefreshToken(refreshToken)
+			myToast({ message: 'Успешно!', type: 'success' })
+			setTimeout(() => {
+				router.push('/')
+			}, 2500)
 		} catch (e) {
-			myToast({ message: 'Ошибка сервера.', type: 'error' })
+			myToast({ message: 'Ошибка!', type: 'error' })
 		}
 	}
 
