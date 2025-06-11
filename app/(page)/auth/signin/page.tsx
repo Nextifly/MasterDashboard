@@ -32,8 +32,8 @@ const SignIn = () => {
 			if (response?.data) {
 				const accessToken = response.data.accessToken
 				const refreshToken = response.data.refreshToken
-				setAccessToken(accessToken)
-				setRefreshToken(refreshToken)
+				setAccessToken(accessToken!)
+				setRefreshToken(refreshToken!)
 				myToast({ message: 'Успешно!', type: 'success' })
 				setTimeout(() => {
 					router.push('/')
