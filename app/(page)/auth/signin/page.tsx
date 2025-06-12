@@ -28,6 +28,7 @@ const SignIn = () => {
 		}
 
 		try {
+			alert(user)
 			const response = await signIn(user)
 			console.log(response)
 			if (response?.data) {
