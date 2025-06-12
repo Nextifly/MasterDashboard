@@ -8,19 +8,7 @@ export const AuthApi = createApi({
 	reducerPath: "auth",
 	baseQuery: fetchBaseQuery({
    	baseUrl: BASE_URL,
-	fetchFn: async (...args) => {
-      // Только для разработки отключаем проверку SSL
-      if (process.env.NODE_ENV === 'development') {
-        const { default: fetch } = await import('node-fetch');
-        const agent = await import('https').then(m => new m.Agent({ rejectUnauthorized: false }));
-        return fetch(args[0], {
-          ...args[1] as any,
-          agent
-        });
-      }
-      // В продакшене используем стандартный fetch
-      return fetch(...args);
-    },
+	mode: 'no-cors',
 	prepareHeaders: (headers) => {
 	      headers.set("Content-Type", "application/json");
 	      headers.set('Access-Control-Allow-Origin', '*');
