@@ -16,14 +16,14 @@ interface IToken {
 export default function DashboardLayout ({children}: {children: ReactNode}) {
 		const router = useRouter()
 		const [emailData, setEmailData] = useState<string>()
-		const { accessToken, setAccessToken } = useAccessToken()
+		const { setAccessToken } = useAccessToken()
 		const { refreshToken, setRefreshToken } = useRefreshToken()
 		const [updateToken] = useUpdateTokenMutation()
 
 		useEffect(() => {
 		try {
 			const decoded: IToken = jwtDecode<JwtPayload>(
-				accessToken!
+				window.localStorage.getItem(accessToken)
 			) as IToken
 			const currentTimeMs = Date.now();
 			const expMs = decoded.exp * 1000;
