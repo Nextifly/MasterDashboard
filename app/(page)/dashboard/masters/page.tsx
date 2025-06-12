@@ -114,7 +114,11 @@ const Masters = () => {
 				console.log('Modal state set to true')
 
 				// 3. Асинхронная операция
-				await getMaster({ id, token: accessToken! })
+				await getMaster({ id, token: accessToken! }).then((masterData: any) => {
+					setMaster(masterData)
+				}).catch((e: any) => {
+					console.error(e)
+				})
 				const photoProfileFetch = await fetch(
 					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-profile`,
 					{
@@ -181,13 +185,7 @@ const Masters = () => {
 		},
 		[accessToken, masterData]
 	)
-
-	useEffect(() => {
-		if (masterData) {
-			setMaster(masterData)
-		}
-	}, [masterData])
-
+	
 	function getMarriedStatus(status: IMarital) {
 		return status === 'DIVORCED'
 			? 'Разведён/Разведена'
