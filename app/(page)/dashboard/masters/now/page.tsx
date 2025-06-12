@@ -93,9 +93,11 @@ const MastersNow = () => {
 				console.log('Modal state set to true')
 
 				// 3. Асинхронная операция
-				await getMaster({ id, token: accessToken! }).unwrap()
-				const photoProfileFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-profile`,
+				// 3. Асинхронная операция
+				await getMaster({ id, token: accessToken! }).unwrap().then(async(masterData: IMasterRequest) => {
+					setMaster(masterData)
+					const photoProfileFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-profile`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -103,7 +105,7 @@ const MastersNow = () => {
 					}
 				)
 				const photoPassportMainFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-passport-main`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-passport-main`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -111,7 +113,7 @@ const MastersNow = () => {
 					}
 				)
 				const photoPassportRegisterFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-passport-register`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-passport-register`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -119,7 +121,7 @@ const MastersNow = () => {
 					}
 				)
 				const photoSnilsFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-snils`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-snils`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -127,14 +129,14 @@ const MastersNow = () => {
 					}
 				)
 				const photoInnFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-inn`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-inn`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
 						},
 					}
 				)
-
+								
 				const blobProfile = await photoProfileFetch.blob()
 				const blobPassportMain = await photoPassportMainFetch.blob()
 				const blobPassportRegister = await photoPassportRegisterFetch.blob()
@@ -142,15 +144,12 @@ const MastersNow = () => {
 				const blobSnils = await photoSnilsFetch.blob()
 
 				// 4. После получения данных
-				if (masterData) {
-					setMaster(masterData)
-				}
 
 				setPhotoProfileData(URL.createObjectURL(blobProfile))
 				setPhotoPassportMainData(URL.createObjectURL(blobPassportMain))
 				setPhotoPassportRegisterData(URL.createObjectURL(blobPassportRegister))
 				setPhotoInnData(URL.createObjectURL(blobInn))
-				setPhotoSnilsData(URL.createObjectURL(blobSnils))
+				setPhotoSnilsData(URL.createObjectURL(blobSnils))})
 			} catch (error) {
 				console.error('Error fetching order:', error)
 			} finally {
@@ -225,7 +224,7 @@ const MastersNow = () => {
 				</Link>
 			</section>
 			<Table list={filterMasters} onClick={handleClick} />
-			{master && !isLoading ? (
+			{master !== undefined && !isLoading ? (
 				<section
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
 						!modal && 'hidden'
@@ -238,6 +237,7 @@ const MastersNow = () => {
 							className='absolute top-3 right-3 cursor-pointer'
 							onClick={() => {
 								setModal(false)
+								setMaster(undefined)
 							}}
 						/>
 						<div className='flex justify-start items-start gap-10 mb-5'>
@@ -367,6 +367,7 @@ const MastersNow = () => {
 							className='absolute top-3 right-3 cursor-pointer'
 							onClick={() => {
 								setModal(false)
+								setMaster(undefined)
 							}}
 						/>
 					</div>
