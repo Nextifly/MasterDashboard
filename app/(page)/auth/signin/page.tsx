@@ -40,7 +40,7 @@ const SignIn = () => {
 				// 	router.push('/dashboard/statements')
 				// }, 2500)
 			} else {
-				alert(response.error)
+				alert(response.error!)
 				myToast({ message: 'Неверные данные!', type: 'error' })
 			}
 		} catch (e) {
