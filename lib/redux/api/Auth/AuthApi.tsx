@@ -8,6 +8,22 @@ export const AuthApi = createApi({
 	reducerPath: "auth",
 	baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
+	prepareHeaders: (headers) => {
+      headers.set("Content-Type", "application/json");
+      headers.set("Accept", "application/json");
+      return headers;
+    },
+    // Добавляем таймаут для мобильных сетей
+    fetchFn: async (input, init) => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 15000); // 15 секунд
+      try {
+        return await fetch(input, { ...init, signal: controller.signal });
+      } catch (error) {
+        console.error("Fetch error:", error);
+        throw new Error("Network request failed");
+      }
+    },
   }),
 	endpoints: builder => ({
 		signUp: builder.mutation<ISignUpRequest,ISignUpResponse>({
