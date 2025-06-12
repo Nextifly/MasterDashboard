@@ -31,14 +31,14 @@ const SignIn = () => {
 			alert(user.email)
 			const response = await signIn(user)
 			if (response?.data) {
-				// const accessToken = response.data.accessToken!
-				// const refreshToken = response.data.refreshToken!
-				// setAccessToken(accessToken!)
-				// setRefreshToken(refreshToken!)
-				// myToast({ message: 'Успешно!', type: 'success' })
-				// setTimeout(() => {
-				// 	router.push('/dashboard/statements')
-				// }, 2500)
+				const accessToken = response.data.accessToken!
+				const refreshToken = response.data.refreshToken!
+				setAccessToken(accessToken!)
+				setRefreshToken(refreshToken!)
+				myToast({ message: 'Успешно!', type: 'success' })
+				setTimeout(() => {
+					router.push('/dashboard/statements')
+				}, 2500)
 			} else {
 				console.log(response.error)
 				myToast({ message: 'Неверные данные!', type: 'error' })
