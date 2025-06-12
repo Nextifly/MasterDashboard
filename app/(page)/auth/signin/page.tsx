@@ -29,6 +29,7 @@ const SignIn = () => {
 
 		try {
 			const response = await signIn(user)
+			alert(response)
 			if (response?.data) {
 				const accessToken = response.data.accessToken!
 				const refreshToken = response.data.refreshToken!
