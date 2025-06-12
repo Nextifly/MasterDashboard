@@ -32,7 +32,6 @@ export const AuthApi = createApi({
     },
   }),
   endpoints: builder => ({
-    // ... ваши endpoints остаются без изменений
     signUp: builder.mutation<ISignUpRequest, ISignUpResponse>({
       query: user => ({
         url: '/admin/register',
@@ -40,6 +39,33 @@ export const AuthApi = createApi({
         body: user
       }),
     }),
-    // ... остальные endpoints
+    signIn: builder.mutation<ISignInRequest, ISignInResponse>({
+      query: user => ({
+        url: '/admin/login',
+        method: 'POST',
+        body: user
+      }),
+    }),
+    forgot: builder.mutation<void, IForgot>({
+      query: user => ({
+        url: '/admin/password/reset-confirm',
+        method: 'PATCH',
+        body: user
+      }),
+    }),
+    logout: builder.mutation<void, ILogout>({
+      query: user => ({
+        url: '/admin/logout',
+        method: 'POST',
+        body: user
+      })
+    }),
+    updateToken: builder.mutation<ISignInRequest, string>({
+      query: token => ({
+        url: '/admin/refresh',
+        method: 'POST',
+        body: token
+      })
+    })
   })
 })
