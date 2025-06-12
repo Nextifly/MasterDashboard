@@ -113,7 +113,7 @@ const TableCategory = ({ list: initialList, onHidden }: ITable) => {
               ) : (
                 <td className='font-medium text-[15px]' key={`actions-${rowIndex}`}>
                   <div className='flex justify-around items-center'>
-                    <Image src={SVGEdit} alt='hidden' className='cursor-pointer size-[33px]' />
+{/*                     <Image src={SVGEdit} alt='hidden' className='cursor-pointer size-[33px]' /> */}
                     <Image src={row[3] === 'false' ? ImageEye : SVGEye} alt='hidden' className='cursor-pointer size-[33px]' onClick={() => onHidden(cell, row[3], row[4] )} />
                   </div>
                 </td>
