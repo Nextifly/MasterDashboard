@@ -7,6 +7,7 @@ import AuthInput from '@/ui/input/AuthInput'
 import AuthLink from '@/ui/text/AuthLink'
 import AuthTitle from '@/ui/text/AuthTitle'
 import { myToast } from '@/ui/toast'
+import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -28,22 +29,29 @@ const SignIn = () => {
 		}
 
 		try {
-			const response = await signIn(user)
-			if (response?.data) {
-				const accessToken = response.data.accessToken!
-				const refreshToken = response.data.refreshToken!
-				setAccessToken(accessToken!)
-				setRefreshToken(refreshToken!)
+			const response = await axios('https://109.73.198.81:9093/api/admin/login', {
+				method: 'POST',
+				headers: {
+                    'Content-Type': 'application/json',
+                },
+				data: user,
+				httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false })
+			})
+			if (response.data?.accessToken && response.data?.refreshToken) {
+				const accessToken = response.data.accessToken
+				const refreshToken = response.data.refreshToken
+				setAccessToken(accessToken)
+				setRefreshToken(refreshToken)
 				myToast({ message: 'Успешно!', type: 'success' })
 				setTimeout(() => {
-					router.push('/dashboard/statements')
+					router.push('/')
 				}, 2500)
-			} else {
-				console.log(response)
-				myToast({ message: 'Неверные данные!', type: 'error' })
+			}
+			else {
+				return myToast({ message: 'Неверные данные.', type: 'error' })
 			}
 		} catch (e) {
-			myToast({ message: 'Ошибка!', type: 'error' })
+			myToast({ message: 'Ошибка сервера.', type: 'error' })
 		}
 	}
 
