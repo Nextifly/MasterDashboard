@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { ISignUpResponse, ISignUpRequest, ISignInResponse, ISignInRequest, IForgot, ILogout } from './types'
+import https from 'https'
 
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
