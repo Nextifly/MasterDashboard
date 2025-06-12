@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "testbuild": "NODE_TLS_REJECT_UNAUTHORIZED=0 next build",
+    "start": "NODE_TLS_REJECT_UNAUTHORIZED=0 next start",
     "lint": "next lint"
   },
   "dependencies": {
