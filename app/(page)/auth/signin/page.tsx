@@ -28,7 +28,6 @@ const SignIn = () => {
 		}
 
 		try {
-			alert(user.email)
 			const response = await signIn(user)
 			if (response?.data) {
 				const accessToken = response.data.accessToken!
@@ -41,7 +40,7 @@ const SignIn = () => {
 				}, 2500)
 			} else {
 				console.log(response)
-				alert(response.error!.message!)
+				// alert(response.error!.message!)
 				myToast({ message: 'Неверные данные!', type: 'error' })
 			}
 		} catch (e) {
