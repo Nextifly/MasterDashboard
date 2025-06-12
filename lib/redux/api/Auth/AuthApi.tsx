@@ -2,29 +2,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { ISignUpResponse, ISignUpRequest, ISignInResponse, ISignInRequest, IForgot, ILogout } from './types'
 import https from 'https'
 
-const customFetch = async (input: RequestInfo, init?: RequestInit) => {
-  const controller = new AbortController()
-  setTimeout(() => controller.abort(), 15000)
-  
-  const options: RequestInit = {
-    ...init,
-    signal: controller.signal,
-  }
-
-  // Добавляем agent только в Node.js среде
-  if (typeof window === 'undefined') {
-    const insecureAgent = new https.Agent({ rejectUnauthorized: false })
-    options.agent = insecureAgent
-  }
-
-  try {
-    return await fetch(input, options)
-  } catch (error) {
-    console.error('Fetch error:', error)
-    throw new Error('Network request failed')
-  }
-}
-
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
 
 export const AuthApi = createApi({
@@ -33,12 +10,11 @@ export const AuthApi = createApi({
    	baseUrl: BASE_URL,
 	prepareHeaders: (headers) => {
 	      headers.set("Content-Type", "application/json");
-	      headers.set('Access-Control-Allow-Origin', '*');
+	      headers.set('Access-Control-Allow-Origin', 'http://109.73.198.81:3000');
 	      headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	      headers.set("Access-Control-Allow-Headers", "Content-Type")
               return headers;
         },
-	fetchFn: customFetch
   }),
 	endpoints: builder => ({
 		signUp: builder.mutation<ISignUpRequest,ISignUpResponse>({
