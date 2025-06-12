@@ -40,7 +40,7 @@ const SignIn = () => {
 				}, 2500)
 			} else {
 				console.log(response)
-				// alert(response.error!.message!)
+				alert(response.error!.data!.message!)
 				myToast({ message: 'Неверные данные!', type: 'error' })
 			}
 		} catch (e) {
