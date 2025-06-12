@@ -10,7 +10,9 @@ export const AuthApi = createApi({
     baseUrl: BASE_URL,
 	prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json");
-      headers.set('Access-Control-Allow-Origin', '*')
+      headers.set('Access-Control-Allow-Origin', '*');
+		headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		headers.set("Access-Control-Allow-Headers", "Content-Type")
       return headers;
     },
 		fetchFn: (input, init) => fetch(input, { 
