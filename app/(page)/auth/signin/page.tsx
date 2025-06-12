@@ -29,14 +29,7 @@ const SignIn = () => {
 		}
 
 		try {
-			const response = await axios('https://109.73.198.81:9093/api/admin/login', {
-				method: 'POST',
-				headers: {
-                    'Content-Type': 'application/json',
-                },
-				data: user,
-				httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false })
-			})
+			const response = await signIn(user)
 			if (response.data?.accessToken && response.data?.refreshToken) {
 				const accessToken = response.data.accessToken
 				const refreshToken = response.data.refreshToken
