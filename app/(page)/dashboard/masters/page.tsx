@@ -112,15 +112,11 @@ const Masters = () => {
 				// 2. Синхронные обновления
 				setModal(true)
 				console.log('Modal state set to true')
-
 				// 3. Асинхронная операция
-				await getMaster({ id, token: accessToken! }).then((masterData: any) => {
+				await getMaster({ id, token: accessToken! }).unwrap().then(async(masterData: IMasterRequest) => {
 					setMaster(masterData)
-				}).catch((e: any) => {
-					console.error(e)
-				})
-				const photoProfileFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-profile`,
+					const photoProfileFetch = await fetch(
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-profile`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -128,7 +124,7 @@ const Masters = () => {
 					}
 				)
 				const photoPassportMainFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-passport-main`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-passport-main`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -136,7 +132,7 @@ const Masters = () => {
 					}
 				)
 				const photoPassportRegisterFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-passport-register`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-passport-register`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -144,7 +140,7 @@ const Masters = () => {
 					}
 				)
 				const photoSnilsFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-snils`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-snils`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
@@ -152,14 +148,14 @@ const Masters = () => {
 					}
 				)
 				const photoInnFetch = await fetch(
-					`https://109.73.198.81:9093/api/master-profiles/${id}/photo-inn`,
+					`https://109.73.198.81:9093/api/master-profiles/${masterData.id}/photo-inn`,
 					{
 						headers: {
 							Authorization: `Bearer ${accessToken}`,
 						},
 					}
 				)
-
+								
 				const blobProfile = await photoProfileFetch.blob()
 				const blobPassportMain = await photoPassportMainFetch.blob()
 				const blobPassportRegister = await photoPassportRegisterFetch.blob()
@@ -167,15 +163,15 @@ const Masters = () => {
 				const blobSnils = await photoSnilsFetch.blob()
 
 				// 4. После получения данных
-				if (masterData) {
-					setMaster(masterData)
-				}
 
 				setPhotoProfileData(URL.createObjectURL(blobProfile))
 				setPhotoPassportMainData(URL.createObjectURL(blobPassportMain))
 				setPhotoPassportRegisterData(URL.createObjectURL(blobPassportRegister))
 				setPhotoInnData(URL.createObjectURL(blobInn))
 				setPhotoSnilsData(URL.createObjectURL(blobSnils))
+				}).catch((e: any) => {
+					console.error(e)
+				})
 			} catch (error) {
 				console.error('Error fetching order:', error)
 			} finally {
@@ -185,7 +181,13 @@ const Masters = () => {
 		},
 		[accessToken, masterData]
 	)
-	
+
+	useEffect(() => {
+		if (masterData) {
+			setMaster(masterData)
+		}
+	}, [masterData])
+
 	function getMarriedStatus(status: IMarital) {
 		return status === 'DIVORCED'
 			? 'Разведён/Разведена'
@@ -283,7 +285,7 @@ const Masters = () => {
 				onClick={handleClick}
 				deleteFunc={deleteMasterFunc}
 			/>
-			{master !== undefined && !isLoading ? (
+			{master && !isLoading ? (
 				<section
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
 						!modal && 'hidden'
