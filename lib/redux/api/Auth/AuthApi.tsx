@@ -2,6 +2,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { ISignUpResponse, ISignUpRequest, ISignInResponse, ISignInRequest, IForgot, ILogout } from './types'
 import https from 'https'
 
+const insecureAgent = new https.Agent({
+  rejectUnauthorized: false
+})
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
 
@@ -16,11 +19,23 @@ export const AuthApi = createApi({
 	      headers.set("Access-Control-Allow-Headers", "Content-Type")
               return headers;
         },
-	fetchFn: (input, init) => {
-    return fetch(input, {
-      ...init,
-      agent: new https.Agent({ rejectUnauthorized: false })
-    })
+	fetchFn: async (input, init) => {
+      const controller = new AbortController()
+      setTimeout(() => controller.abort(), 15000)
+      
+      // Добавляем наш insecureAgent к запросу
+      const options = {
+        ...init,
+        signal: controller.signal,
+        agent: insecureAgent // Добавляем агента здесь
+      }
+      
+      try {
+        return await fetch(input, options)
+      } catch (error) {
+        console.error('Fetch error:', error)
+        throw new Error('Network request failed')
+      }
   }
   }),
 	endpoints: builder => ({
