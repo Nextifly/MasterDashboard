@@ -1,30 +1,37 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { ISignUpResponse, ISignUpRequest, ISignInResponse, ISignInRequest, IForgot, ILogout } from './types'
-import https from 'https' // Импортируем Node.js https модуль
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string
 
-// Создаем кастомный fetch с отключенной проверкой SSL
-const customFetch = async (input: RequestInfo, init?: RequestInit) => {
-  const agent = new https.Agent({ rejectUnauthorized: false }) // Отключаем проверку сертификата
-  const modifiedInit = {
-    ...init,
-    agent, // Передаем agent в fetch
+// Универсальный fetch с отключенной проверкой сертификатов
+const insecureFetch = async (input: RequestInfo, init?: RequestInit) => {
+  // Для Node.js окружения
+  if (typeof window === 'undefined') {
+    const { default: nodeFetch } = await import('node-fetch')
+    const https = await import('https')
+    const agent = new https.Agent({ 
+      rejectUnauthorized: false,
+      secureOptions: require('constants').SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
+    })
+    return nodeFetch(input as any, { ...init as any, agent })
   }
-  return fetch(input as any, modifiedInit as any)
+  
+  // Для браузерного окружения
+  return fetch(input, {
+    ...init,
+    mode: 'no-cors',
+    credentials: 'omit'
+  } as RequestInit)
 }
 
 export const AuthApi = createApi({
   reducerPath: "auth",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    fetchFn: customFetch, // Используем кастомный fetch
-    mode: 'no-cors',
+    fetchFn: insecureFetch, // Используем наш кастомный fetch
     prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json")
       headers.set('Access-Control-Allow-Origin', '*')
-      headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-      headers.set("Access-Control-Allow-Headers", "Content-Type")
       return headers
     },
   }),
