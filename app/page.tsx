@@ -9,7 +9,7 @@ const Home = () => {
   const { accessToken } = useAccessToken()
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!window.localStorage.getItem('accessToken')) {
       router.push('/auth/signup')
     } else {
       router.push('/dashboard/statements')
