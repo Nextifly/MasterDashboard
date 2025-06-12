@@ -7,19 +7,20 @@ const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
 export const AuthApi = createApi({
 	reducerPath: "auth",
 	baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
+   	baseUrl: BASE_URL,
 	prepareHeaders: (headers) => {
-      headers.set("Content-Type", "application/json");
-      headers.set('Access-Control-Allow-Origin', '*');
-		headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		headers.set("Access-Control-Allow-Headers", "Content-Type")
-      return headers;
-    },
-		fetchFn: (input, init) => fetch(input, { 
-    ...init, 
-    mode: 'cors',  // Явно указываем CORS
-    credentials: 'same-origin'  // Или 'include' если нужны куки
-  })
+	      headers.set("Content-Type", "application/json");
+	      headers.set('Access-Control-Allow-Origin', '*');
+	      headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	      headers.set("Access-Control-Allow-Headers", "Content-Type")
+              return headers;
+        },
+	fetchFn: (input, init) => {
+    return fetch(input, {
+      ...init,
+      agent: new https.Agent({ rejectUnauthorized: false })
+    })
+  }
   }),
 	endpoints: builder => ({
 		signUp: builder.mutation<ISignUpRequest,ISignUpResponse>({
