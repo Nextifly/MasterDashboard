@@ -10,7 +10,7 @@ export const AuthApi = createApi({
     baseUrl: BASE_URL,
 	prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json");
-      headers.set("Accept", "application/json");
+      headers.set('Access-Control-Allow-Origin', '*')
       return headers;
     },
     // Добавляем таймаут для мобильных сетей
