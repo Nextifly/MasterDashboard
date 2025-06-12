@@ -283,7 +283,7 @@ const Masters = () => {
 				onClick={handleClick}
 				deleteFunc={deleteMasterFunc}
 			/>
-			{master && !isLoading ? (
+			{master !== undefined && !isLoading ? (
 				<section
 					className={`fixed w-full h-full top-0 left-0 bg-[#00000099] ${
 						!modal && 'hidden'
@@ -296,6 +296,7 @@ const Masters = () => {
 							className='absolute top-3 right-3 cursor-pointer'
 							onClick={() => {
 								setModal(false)
+								setMaster(undefined)
 							}}
 						/>
 						<div className='flex justify-start items-start gap-10 mb-5'>
@@ -430,6 +431,7 @@ const Masters = () => {
 							className='absolute top-3 right-3 cursor-pointer'
 							onClick={() => {
 								setModal(false)
+								setMaster(undefined)
 							}}
 						/>
 					</div>
