@@ -4,6 +4,8 @@ import https from 'https'
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_API_URL as string;
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
 export const AuthApi = createApi({
 	reducerPath: "auth",
 	baseQuery: fetchBaseQuery({
