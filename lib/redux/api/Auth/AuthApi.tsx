@@ -13,17 +13,6 @@ export const AuthApi = createApi({
       headers.set('Access-Control-Allow-Origin', '*')
       return headers;
     },
-    // Добавляем таймаут для мобильных сетей
-    fetchFn: async (input, init) => {
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 15000); // 15 секунд
-      try {
-        return await fetch(input, { ...init, signal: controller.signal });
-      } catch (error) {
-        console.error("Fetch error:", error);
-        throw new Error("Network request failed");
-      }
-    },
   }),
 	endpoints: builder => ({
 		signUp: builder.mutation<ISignUpRequest,ISignUpResponse>({
