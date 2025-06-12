@@ -13,6 +13,11 @@ export const AuthApi = createApi({
       headers.set('Access-Control-Allow-Origin', '*')
       return headers;
     },
+		fetchFn: (input, init) => fetch(input, { 
+    ...init, 
+    mode: 'cors',  // Явно указываем CORS
+    credentials: 'same-origin'  // Или 'include' если нужны куки
+  })
   }),
 	endpoints: builder => ({
 		signUp: builder.mutation<ISignUpRequest,ISignUpResponse>({
