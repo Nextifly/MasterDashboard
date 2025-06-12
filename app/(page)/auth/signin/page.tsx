@@ -28,7 +28,7 @@ const SignIn = () => {
 		}
 
 		try {
-			alert(user.name)
+			alert(user.email)
 			const response = await signIn(user)
 			if (response?.data) {
 				// const accessToken = response.data.accessToken!
@@ -40,7 +40,7 @@ const SignIn = () => {
 				// 	router.push('/dashboard/statements')
 				// }, 2500)
 			} else {
-				alert(response.error!)
+				alert(response.error)
 				myToast({ message: 'Неверные данные!', type: 'error' })
 			}
 		} catch (e) {
