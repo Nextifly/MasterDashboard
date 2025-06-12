@@ -40,7 +40,7 @@ const SignIn = () => {
 					router.push('/dashboard/statements')
 				}, 2500)
 			} else {
-				console.log(response.error)
+				console.log(response)
 				alert(response.error!.message!)
 				myToast({ message: 'Неверные данные!', type: 'error' })
 			}
