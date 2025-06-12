@@ -138,7 +138,7 @@ const Statements = () => {
 		}
 	}, [getOrders])
 
-	const deleteFunc = (id: string) => {}
+	// const deleteFunc = (id: string) => {}
 
 	const handleClick = useCallback(
 		async (id: string) => {
@@ -367,7 +367,6 @@ const Statements = () => {
 			<Table
 				list={filterOrders}
 				onClick={handleClick}
-				deleteFunc={deleteFunc}
 			/>
 			{order !== undefined && !isLoading ? (
 				<section
