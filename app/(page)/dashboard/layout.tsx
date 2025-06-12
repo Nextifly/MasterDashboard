@@ -22,8 +22,9 @@ export default function DashboardLayout ({children}: {children: ReactNode}) {
 
 		useEffect(() => {
 		try {
-			const decoded: IToken = jwtDecode<JwtPayload>(
-				window.localStorage.getItem(accessToken) as string
+			if (window.localStorage.getItem('accessToken')) {
+				const decoded: IToken = jwtDecode<JwtPayload>(
+				window.localStorage.getItem('accessToken') as string
 			) as IToken
 			const currentTimeMs = Date.now();
 			const expMs = decoded.exp * 1000;
@@ -40,8 +41,11 @@ export default function DashboardLayout ({children}: {children: ReactNode}) {
 				refreshTokenFunc()
 			}
 			setEmailData(decoded.email)
+			} else {
+				router.push('/auth/signin')
+			}
 		} catch (error) {
-			router.push('/auth/signup')
+			router.push('/auth/signin')
 		}
 	}, [])
 	
