@@ -16,7 +16,7 @@ interface IToken {
 export default function DashboardLayout ({children}: {children: ReactNode}) {
 		const router = useRouter()
 		const [emailData, setEmailData] = useState<string>()
-		const { setAccessToken } = useAccessToken()
+		const { accessToken, setAccessToken } = useAccessToken()
 		const { refreshToken, setRefreshToken } = useRefreshToken()
 		const [updateToken] = useUpdateTokenMutation()
 
